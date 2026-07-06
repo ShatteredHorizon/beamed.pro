@@ -18,7 +18,6 @@
       --subtext: rgba(255,255,255,.6);
       --muted: rgba(255,255,255,.4);
       --green: #22c55e;
-      --green-dim: #16a34a;
       --inset: inset 0 1px 0 0 rgba(255,255,255,.12), inset 0 0 12px 0 rgba(255,255,255,.04);
     }
     html { background: var(--bg); }
@@ -45,7 +44,7 @@
     }
 
     .page-wrap { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; width: 100%; }
 
     /* Navbar */
     .navbar {
@@ -85,7 +84,7 @@
     }
     .nav-links a:hover, .nav-links button:hover { color: var(--text); background: rgba(255,255,255,.05); }
 
-    /* Glass utility */
+    /* Glass */
     .glass {
       background: var(--surface);
       backdrop-filter: blur(8px);
@@ -95,7 +94,7 @@
       box-shadow: var(--inset);
     }
 
-    /* Dashboard header */
+    /* Header */
     .dash-header {
       padding: 48px 0 32px;
       border-bottom: 1px solid var(--border);
@@ -139,8 +138,22 @@
       margin-top: 6px;
     }
 
+    /* Mini stats */
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .mini-stat {
+      padding: 20px;
+      text-align: center;
+    }
+    .mini-stat .num { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .mini-stat .label { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+
     /* Cards grid */
-    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
     @media (max-width: 700px) { .dash-grid { grid-template-columns: 1fr; } }
 
     .dash-card {
@@ -157,6 +170,39 @@
     .dash-card p { font-size: .875rem; color: var(--subtext); margin-bottom: 20px; line-height: 1.5; }
     .dash-card .price { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
     .dash-card .price-label { font-size: .8rem; color: var(--muted); margin-bottom: 24px; }
+
+    /* Recent orders section */
+    .recent-section { margin-bottom: 40px; }
+    .recent-section h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 22px;
+      margin-bottom: 6px;
+      transition: border-color .2s;
+    }
+    .order-item:hover { border-color: rgba(34,197,94,.15); }
+    .order-item .left { display: flex; flex-direction: column; gap: 2px; }
+    .order-item .name { font-size: .9rem; font-weight: 500; }
+    .order-item .date { font-size: .8rem; color: var(--muted); }
+    .order-item .status {
+      font-size: .8rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .order-item .status.delivered {
+      background: rgba(34,197,94,.1);
+      color: #4ade80;
+    }
+
+    .order-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: .875rem;
+    }
 
     .btn {
       display: inline-flex;
@@ -188,6 +234,7 @@
     }
     .btn-glass:hover { background: rgba(255,255,255,.05); opacity: 1; }
     .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-sm { padding: 10px 18px; font-size: .875rem; width: auto; }
 
     /* Loading */
     .loading {
@@ -198,8 +245,6 @@
       color: var(--muted);
       font-size: 1rem;
     }
-
-    /* Error */
     .config-error {
       max-width: 500px;
       margin: 40px auto;
@@ -211,10 +256,12 @@
       font-size: .875rem;
       text-align: center;
     }
-
-    /* Reveal */
     .reveal { opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; }
     .reveal.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .mini-stats { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -234,6 +281,8 @@
     <div id="loadingState" class="loading">Loading...</div>
     <div id="errorState" class="config-error" style="display:none;"></div>
     <div id="dashContent" style="display:none;">
+
+      <!-- Profile header -->
       <div class="dash-header reveal show">
         <div class="avatar">
           <img id="userAvatar" src="" alt="" style="display:none;" />
@@ -242,27 +291,53 @@
         <div class="user-info">
           <h1 id="userDisplayName">User</h1>
           <div class="tag" id="userEmail"></div>
-          <div class="reseller-badge" id="resellerBadge" style="display:none;">Reseller</div>
+          <div class="reseller-badge" id="resellerBadge" style="display:none;">Reseller - 25% off</div>
         </div>
       </div>
 
+      <!-- Mini stats -->
+      <div class="mini-stats reveal">
+        <div class="mini-stat glass">
+          <div class="num">$0.00</div>
+          <div class="label">Total Spent</div>
+        </div>
+        <div class="mini-stat glass">
+          <div class="num">0</div>
+          <div class="label">Accounts Bought</div>
+        </div>
+        <div class="mini-stat glass">
+          <div class="num" id="memberSince">-</div>
+          <div class="label">Member Since</div>
+        </div>
+      </div>
+
+      <!-- Action cards -->
       <div class="dash-grid">
         <div class="dash-card glass reveal">
           <h3>Buy Account</h3>
           <p>Premium Minecraft alt account. Full access. Instant delivery.</p>
           <div class="price" id="normalPrice">$4.50</div>
-          <div class="price-label">One-time payment</div>
-          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-white">Buy Account - <span id="normalPriceBtn">$4.50</span></a>
+          <div class="price-label" id="priceLabel">One-time payment</div>
+          <a href="https://beamed-pro.mysellauth.com/product/mcfa-unbanned" target="_blank" class="btn btn-white">Buy Account - <span id="normalPriceBtn">$4.50</span></a>
         </div>
 
         <div class="dash-card glass reveal" id="resellerCard">
           <h3>Reseller Access</h3>
-          <p>Get accounts for $3.50 each instead of $4.50. Lifetime access.</p>
+          <p>Get <strong>25% off</strong> all accounts — pay $3.38 instead of $4.50. Lifetime access.</p>
           <div class="price">$15.00</div>
           <div class="price-label">One-time fee / Lifetime reseller pricing</div>
-          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-glass">Buy Reseller Access - $15</a>
+          <a href="https://beamed-pro.mysellauth.com/product/reseller-access" target="_blank" class="btn btn-glass">Buy Reseller Access - $15</a>
         </div>
       </div>
+
+      <!-- Recent orders -->
+      <div class="recent-section reveal">
+        <h3>Recent Orders</h3>
+        <div id="ordersList" class="order-empty glass">
+          No orders yet. Buy an account to get started.
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -290,6 +365,7 @@
       var avatar = document.getElementById('userAvatar')
       var placeholder = document.getElementById('avatarPlaceholder')
       var badge = document.getElementById('resellerBadge')
+      var memberSince = document.getElementById('memberSince')
 
       supabase.auth.getSession().then(function(result) {
         if (!result.data.session || !result.data.session.user) { window.location.href = '/'; return }
@@ -300,6 +376,10 @@
         displayName.textContent = meta.full_name || meta.preferred_username || user.email || 'User'
         email.textContent = user.email || ''
 
+        memberSince.textContent = user.created_at
+          ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : '-'
+
         if (meta.avatar_url) {
           avatar.src = meta.avatar_url
           avatar.style.display = 'block'
@@ -308,11 +388,13 @@
           placeholder.textContent = (displayName.textContent || '?')[0].toUpperCase()
         }
 
+        // Check reseller status
         supabase.from('profiles').select('is_reseller').eq('id', user.id).single().then(function(r) {
           if (r.data && r.data.is_reseller) {
             badge.style.display = 'inline-block'
-            document.getElementById('normalPrice').textContent = '$3.50'
-            document.getElementById('normalPriceBtn').textContent = '$3.50'
+            document.getElementById('normalPrice').textContent = '$3.38'
+            document.getElementById('normalPriceBtn').textContent = '$3.38'
+            document.getElementById('priceLabel').textContent = 'One-time payment (25% reseller discount)'
             document.getElementById('resellerCard').style.display = 'none'
           }
         }).catch(function() {})
@@ -320,7 +402,6 @@
         loading.style.display = 'none'
         content.style.display = 'block'
 
-        // reveal observer for cards
         var obs = new IntersectionObserver(function(entries) {
           entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('show') })
         }, { threshold: .1 })
