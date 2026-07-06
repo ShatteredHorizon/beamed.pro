@@ -466,13 +466,20 @@
         }
 
         // Check profile (banned + reseller)
-        supabase.from('profiles').select('is_reseller,banned').eq('id', user.id).single().then(function(r) {
+        supabase.from('profiles').select('is_reseller,banned,avatar_url').eq('id', user.id).single().then(function(r) {
           var profile = r.data
 
           // Banned check (skip for admin)
           if (profile && profile.banned && !isAdmin(user.email)) {
             showBannedScreen()
             return
+          }
+
+          // Use profile avatar if set, else Discord metadata avatar
+          if (profile && profile.avatar_url) {
+            avatar.src = profile.avatar_url
+            avatar.style.display = 'block'
+            placeholder.style.display = 'none'
           }
 
           // Handle reseller status
@@ -561,7 +568,7 @@
       }
 
       function loadAllUsers() {
-        supabase.from('profiles').select('id,display_name,email,is_reseller,banned').order('created_at', { ascending: false }).then(function(r) {
+        supabase.from('profiles').select('id,display_name,email,avatar_url,is_reseller,banned').order('created_at', { ascending: false }).then(function(r) {
           document.getElementById('usersLoading').style.display = 'none'
           if (r.error) {
             document.getElementById('usersError').textContent = 'Error loading users: ' + r.error.message
@@ -574,9 +581,11 @@
             var row = document.createElement('div')
             row.className = 'user-row'
             var initial = (u.display_name || u.email || '?')[0].toUpperCase()
+            var avatarHtml = u.avatar_url
+              ? '<img src="' + escapeHtml(u.avatar_url) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" />'
+              : '<div class="user-row-avatar">' + initial + '</div>'
             row.innerHTML =
-              '<div class="user-row-info">' +
-                '<div class="user-row-avatar">' + initial + '</div>' +
+              '<div class="user-row-info">' + avatarHtml +
                 '<div>' +
                   '<div class="user-row-name">' + escapeHtml(u.display_name || 'Unknown') + '</div>' +
                   '<div class="user-row-email">' + escapeHtml(u.email || '') + '</div>' +
