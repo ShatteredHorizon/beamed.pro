@@ -171,37 +171,31 @@
     .dash-card .price { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
     .dash-card .price-label { font-size: .8rem; color: var(--muted); margin-bottom: 24px; }
 
-    /* Recent orders section */
-    .recent-section { margin-bottom: 40px; }
-    .recent-section h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
-    .order-item {
+    /* Reseller status card */
+    .status-card {
+      padding: 24px 32px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 16px 22px;
-      margin-bottom: 6px;
+      justify-content: space-between;
+      margin-bottom: 32px;
       transition: border-color .2s;
     }
-    .order-item:hover { border-color: rgba(34,197,94,.15); }
-    .order-item .left { display: flex; flex-direction: column; gap: 2px; }
-    .order-item .name { font-size: .9rem; font-weight: 500; }
-    .order-item .date { font-size: .8rem; color: var(--muted); }
-    .order-item .status {
-      font-size: .8rem;
-      padding: 4px 12px;
+    .status-card .left h4 { font-size: 1rem; font-weight: 600; }
+    .status-card .left p { font-size: .85rem; color: var(--subtext); margin-top: 2px; }
+    .status-badge {
+      padding: 6px 18px;
       border-radius: 999px;
-      font-weight: 500;
+      font-size: .85rem;
+      font-weight: 600;
+      flex-shrink: 0;
     }
-    .order-item .status.delivered {
+    .status-badge.yes {
       background: rgba(34,197,94,.1);
       color: #4ade80;
     }
-
-    .order-empty {
-      text-align: center;
-      padding: 40px 20px;
+    .status-badge.no {
+      background: rgba(255,255,255,.05);
       color: var(--muted);
-      font-size: .875rem;
     }
 
     .btn {
@@ -311,6 +305,15 @@
         </div>
       </div>
 
+      <!-- Reseller status -->
+      <div class="status-card glass reveal" id="resellerStatus">
+        <div class="left">
+          <h4>Reseller Access</h4>
+          <p id="resellerDesc">Get 25% off all accounts — $3.38 instead of $4.50</p>
+        </div>
+        <span class="status-badge" id="resellerBadgeStatus">Loading...</span>
+      </div>
+
       <!-- Action cards -->
       <div class="dash-grid">
         <div class="dash-card glass reveal">
@@ -322,19 +325,11 @@
         </div>
 
         <div class="dash-card glass reveal" id="resellerCard">
-          <h3>Reseller Access</h3>
-          <p>Get <strong>25% off</strong> all accounts — pay $3.38 instead of $4.50. Lifetime access.</p>
+          <h3>Upgrade to Reseller</h3>
+          <p>Get <strong>25% off</strong> all accounts — $3.38 instead of $4.50. Lifetime access.</p>
           <div class="price">$15.00</div>
           <div class="price-label">One-time fee / Lifetime reseller pricing</div>
           <a href="https://beamed-pro.mysellauth.com/product/reseller-access" target="_blank" class="btn btn-glass">Buy Reseller Access - $15</a>
-        </div>
-      </div>
-
-      <!-- Recent orders -->
-      <div class="recent-section reveal">
-        <h3>Recent Orders</h3>
-        <div id="ordersList" class="order-empty glass">
-          No orders yet. Buy an account to get started.
         </div>
       </div>
 
@@ -390,12 +385,22 @@
 
         // Check reseller status
         supabase.from('profiles').select('is_reseller').eq('id', user.id).single().then(function(r) {
-          if (r.data && r.data.is_reseller) {
+          var isReseller = r.data && r.data.is_reseller
+          var statusBadge = document.getElementById('resellerBadgeStatus')
+          var resellerCard = document.getElementById('resellerCard')
+
+          if (isReseller) {
             badge.style.display = 'inline-block'
             document.getElementById('normalPrice').textContent = '$3.38'
             document.getElementById('normalPriceBtn').textContent = '$3.38'
             document.getElementById('priceLabel').textContent = 'One-time payment (25% reseller discount)'
-            document.getElementById('resellerCard').style.display = 'none'
+            resellerCard.style.display = 'none'
+            statusBadge.textContent = 'Yes'
+            statusBadge.className = 'status-badge yes'
+            document.getElementById('resellerDesc').textContent = 'You have lifetime reseller access with 25% off all accounts.'
+          } else {
+            statusBadge.textContent = 'No'
+            statusBadge.className = 'status-badge no'
           }
         }).catch(function() {})
 
