@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>beamed.pro &mdash; Premium Minecraft Alt Accounts</title>
+  <title>beamed.pro — Premium Minecraft Alt Accounts</title>
   <meta name="description" content="Premium Minecraft alt accounts - instant delivery, replacement guarantee." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,17 +11,15 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #08080a;
-      --mantle: #0e0e12;
-      --base: #131319;
-      --surface0: #1a1a22;
-      --surface1: #2a2a35;
+      --bg: #0a0a0a;
+      --surface: rgba(255,255,255,.02);
       --border: rgba(255,255,255,.08);
-      --text: #ededf0;
-      --subtext: #b4b4be;
-      --muted: #6f6f7a;
+      --text: #fff;
+      --subtext: rgba(255,255,255,.6);
+      --muted: rgba(255,255,255,.4);
       --green: #22c55e;
-      --green-hover: #16a34a;
+      --green-glow: rgba(34,197,94,.15);
+      --inset: inset 0 1px 0 0 rgba(255,255,255,.12), inset 0 0 12px 0 rgba(255,255,255,.04);
     }
     html { background: var(--bg); scroll-behavior: smooth; }
     body {
@@ -32,153 +30,207 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    a { color: var(--green); text-decoration: none; }
+    a { color: var(--text); text-decoration: none; }
     a:hover { opacity: .8; }
 
-    /* Reveal on scroll */
-    .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity .5s ease, transform .5s ease;
-    }
-    .reveal.show {
-      opacity: 1;
-      transform: translateY(0);
+    /* Background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 600px 400px at 20% 30%, hsla(140,100%,50%,.06), transparent),
+        radial-gradient(ellipse 500px 500px at 80% 70%, hsla(140,100%,40%,.04), transparent);
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .page-wrap { min-height: 100vh; display: flex; flex-direction: column; }
+    .page-wrap { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
     .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; width: 100%; }
 
     /* Navbar */
     .navbar {
-      background: rgba(8,8,10,.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: sticky;
       top: 0;
       z-index: 100;
+      background: rgba(10,10,10,.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
-    .navbar .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .navbar .container { display: flex; align-items: center; justify-content: space-between; position: relative; }
     .nav-brand {
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 700;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       color: var(--text);
-      letter-spacing: -.02em;
     }
-    .nav-brand img { height: 32px; width: auto; }
-    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
-    .nav-links a, .nav-links button {
+    .nav-brand img { height: 30px; width: auto; }
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .nav-center a {
+      font-size: .875rem;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 999px;
+      color: var(--subtext);
+      transition: all .2s;
+    }
+    .nav-center a:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .btn-ghost {
       font-family: inherit;
       font-size: .875rem;
       font-weight: 500;
-      padding: 8px 14px;
-      border-radius: 10px;
+      padding: 8px 18px;
+      border-radius: 999px;
       color: var(--subtext);
-      transition: all .15s;
+      background: var(--surface);
       border: none;
-      background: none;
       cursor: pointer;
-      position: relative;
+      transition: all .2s;
+      box-shadow: var(--inset);
     }
-    .nav-links a::after, .nav-links button:not(.btn-signout)::after {
-      content: '';
-      position: absolute;
-      bottom: 4px;
-      left: 14px;
-      right: 14px;
-      height: 2px;
-      background: var(--green);
-      transform: scaleX(0);
-      transition: transform .2s ease;
-    }
-    .nav-links a:hover::after, .nav-links button:not(.btn-signout):hover::after {
-      transform: scaleX(1);
-    }
-    .nav-links a:hover, .nav-links button:hover {
-      color: var(--text);
-    }
-    .nav-links .btn-signin {
-      background: var(--green);
-      color: #000;
+    .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .btn-primary {
+      font-family: inherit;
+      font-size: .875rem;
       font-weight: 600;
+      padding: 8px 22px;
+      border-radius: 999px;
+      background: rgba(34,197,94,.15);
+      color: #4ade80;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: var(--inset);
     }
-    .nav-links .btn-signin::after { display: none; }
-    .nav-links .btn-signin:hover { background: var(--green-hover); color: #000; opacity: 1; }
-    .mobile-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; padding: 8px; }
+    .btn-primary:hover { background: rgba(34,197,94,.25); color: #4ade80; opacity: 1; }
+    .mobile-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
 
     /* Hero */
     .hero {
-      padding: 100px 0 60px;
+      padding: 120px 0 80px;
       text-align: center;
     }
     .hero h1 {
-      font-size: 3.5rem;
+      font-size: 4rem;
       font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1.1;
-      margin-bottom: 16px;
+      letter-spacing: -.04em;
+      line-height: 1.05;
+      margin-bottom: 20px;
     }
-    .hero h1 span { color: var(--green); }
+    .hero h1 span {
+      background: linear-gradient(to bottom, #fff, rgba(255,255,255,.7));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero h1 .accent {
+      background: linear-gradient(to bottom, #4ade80, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     .hero p {
       font-size: 1.125rem;
       color: var(--subtext);
-      max-width: 550px;
-      margin: 0 auto 32px;
+      max-width: 520px;
+      margin: 0 auto 36px;
     }
     .hero .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 28px;
-      border-radius: 10px;
+      padding: 14px 32px;
+      border-radius: 999px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       border: none;
       font-family: inherit;
-      transition: all .15s;
+      transition: all .2s;
     }
-    .btn-green { background: var(--green); color: #000; }
-    .btn-green:hover { background: var(--green-hover); color: #000; opacity: 1; }
-    .btn-outline {
-      background: transparent;
+    .btn-white {
+      background: rgba(255,255,255,.9);
+      color: #000;
+      box-shadow: 0 2px 8px -2px rgba(0,0,0,.2), inset 0 1px 0 0 rgba(255,255,255,.9), inset 0 -1px 2px 0 rgba(0,0,0,.08);
+    }
+    .btn-white:hover { background: #fff; opacity: 1; }
+    .btn-glass {
+      background: var(--surface);
       color: var(--text);
-      border: 1px solid var(--surface1);
+      box-shadow: var(--inset);
+      backdrop-filter: blur(4px);
     }
-    .btn-outline:hover { border-color: var(--green); color: var(--green); opacity: 1; }
+    .btn-glass:hover { background: rgba(255,255,255,.05); opacity: 1; }
 
     /* Stats */
     .stats-bar {
       display: flex;
       justify-content: center;
-      gap: 60px;
-      padding: 36px 0;
+      gap: 80px;
+      padding: 40px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
     .stat-item { text-align: center; }
-    .stat-item .num { font-size: 1.5rem; font-weight: 800; color: var(--green); }
+    .stat-item .num { font-size: 1.5rem; font-weight: 700; color: var(--text); }
     .stat-item .label { font-size: .85rem; color: var(--muted); margin-top: 2px; }
 
     /* Sections */
-    .section { padding: 80px 0; }
-    .section-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 12px; }
-    .section-subtitle { color: var(--subtext); max-width: 500px; margin-bottom: 48px; }
+    .section { padding: 100px 0; }
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .section-subtitle {
+      color: var(--subtext);
+      max-width: 480px;
+      margin: 0 auto 56px;
+      text-align: center;
+    }
+
+    /* Glass card */
+    .glass {
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--inset);
+    }
 
     /* Product */
+    .product-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
     .product-card {
-      background: var(--base);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 40px;
+      padding: 48px;
       text-align: center;
-      max-width: 420px;
-      margin: 0 auto;
+      max-width: 440px;
+      width: 100%;
       transition: transform .25s ease, border-color .25s ease;
     }
     .product-card:hover {
@@ -187,31 +239,28 @@
     }
     .product-card .badge {
       display: inline-block;
-      padding: 4px 12px;
+      padding: 4px 14px;
       border-radius: 999px;
       font-size: .75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .04em;
-      background: rgba(34,197,94,.12);
-      color: var(--green);
+      background: rgba(34,197,94,.1);
+      color: #4ade80;
       margin-bottom: 16px;
     }
     .product-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
     .product-card .desc { font-size: .875rem; color: var(--subtext); margin-bottom: 20px; }
-    .product-card .price { font-size: 3rem; font-weight: 800; color: var(--green); margin-bottom: 8px; }
-    .product-card .price-sub { font-size: .875rem; color: var(--muted); margin-bottom: 24px; }
-    .product-card .btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: 16px 28px; }
+    .product-card .price { font-size: 3rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .product-card .price-sub { font-size: .85rem; color: var(--muted); margin-bottom: 28px; }
+    .product-card .btn { width: 100%; justify-content: center; padding: 16px 28px; font-size: 1.05rem; }
 
     /* Reseller */
     .reseller-card {
-      background: var(--base);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 32px;
+      padding: 36px;
       text-align: center;
-      max-width: 420px;
-      margin: 24px auto 0;
+      max-width: 440px;
+      width: 100%;
       transition: transform .25s ease, border-color .25s ease;
     }
     .reseller-card:hover {
@@ -220,40 +269,55 @@
     }
     .reseller-card h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
     .reseller-card p { font-size: .85rem; color: var(--subtext); margin-bottom: 12px; }
-    .reseller-card .price { font-size: 1.5rem; font-weight: 700; color: var(--green); margin-bottom: 16px; }
+    .reseller-card .price { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 16px; }
     .reseller-card .btn { width: 100%; justify-content: center; }
 
     /* Features */
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
     }
     .feature-card {
-      background: var(--base);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px 24px;
+      padding: 32px 24px;
       text-align: center;
       transition: transform .25s ease, border-color .25s ease;
     }
     .feature-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(34,197,94,.15);
+      transform: translateY(-3px);
+      border-color: rgba(34,197,94,.2);
     }
-    .feature-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
-    .feature-card p { font-size: .85rem; color: var(--subtext); }
+    .feature-card .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(34,197,94,.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 1.1rem;
+      color: #4ade80;
+      box-shadow: var(--inset);
+    }
+    .feature-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .feature-card p { font-size: .85rem; color: var(--subtext); line-height: 1.5; }
 
     /* FAQ */
-    .faq-list { max-width: 660px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
     .faq-item {
-      background: var(--base);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 16px;
       overflow: hidden;
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      box-shadow: var(--inset);
+      transition: border-color .2s;
     }
+    .faq-item:hover { border-color: rgba(34,197,94,.15); }
     .faq-question {
-      padding: 16px 20px;
+      padding: 18px 22px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
@@ -262,24 +326,24 @@
       font-size: 1rem;
       user-select: none;
     }
-    .faq-question:hover { background: rgba(255,255,255,.03); }
+    .faq-question:hover { background: rgba(255,255,255,.02); }
     .faq-answer {
       max-height: 0;
       overflow: hidden;
-      transition: max-height .2s ease, padding .2s ease;
-      padding: 0 20px;
+      transition: max-height .25s ease, padding .25s ease;
+      padding: 0 22px;
       color: var(--subtext);
-      font-size: .925rem;
+      font-size: .9rem;
       line-height: 1.6;
     }
-    .faq-item.open .faq-answer { max-height: 300px; padding: 0 20px 18px; }
+    .faq-item.open .faq-answer { max-height: 300px; padding: 0 22px 20px; }
 
     /* Footer */
     .footer {
       margin-top: auto;
       border-top: 1px solid var(--border);
       padding: 48px 0 24px;
-      background: var(--mantle);
+      background: rgba(255,255,255,.01);
     }
     .footer-grid {
       display: grid;
@@ -287,11 +351,11 @@
       gap: 40px;
       margin-bottom: 32px;
     }
-    .footer-brand .brand-name { font-weight: 700; font-size: 1.15rem; color: var(--green); margin-bottom: 6px; display: block; }
-    .footer-brand p { color: var(--subtext); font-size: .875rem; max-width: 280px; }
+    .footer-brand .brand-name { font-weight: 700; font-size: 1.1rem; color: var(--text); margin-bottom: 6px; display: block; }
+    .footer-brand p { color: var(--subtext); font-size: .875rem; max-width: 260px; }
     .footer-col h5 { font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 14px; }
-    .footer-col a { display: block; color: var(--subtext); font-size: .875rem; padding: 3px 0; }
-    .footer-col a:hover { color: var(--green); }
+    .footer-col a { display: block; color: var(--subtext); font-size: .875rem; padding: 3px 0; transition: color .15s; }
+    .footer-col a:hover { color: var(--text); }
     .footer-bottom {
       border-top: 1px solid var(--border);
       padding-top: 20px;
@@ -304,6 +368,10 @@
       gap: 12px;
     }
 
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.show { opacity: 1; transform: translateY(0); }
+
     /* Error state */
     .config-error {
       max-width: 500px;
@@ -311,7 +379,7 @@
       padding: 20px;
       background: rgba(255,122,138,.08);
       border: 1px solid rgba(255,122,138,.2);
-      border-radius: 10px;
+      border-radius: 12px;
       color: #ff7a8a;
       font-size: .875rem;
       text-align: center;
@@ -319,20 +387,25 @@
     }
 
     /* Responsive */
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 768px) {
-      .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; background: rgba(8,8,10,.98); flex-direction: column; padding: 16px 24px; border-bottom: 1px solid var(--border); }
-      .nav-links.open { display: flex; }
+      .nav-center { display: none; position: absolute; top: 64px; left: 0; right: 0; background: rgba(10,10,10,.98); flex-direction: column; padding: 12px 24px; border-bottom: 1px solid var(--border); }
+      .nav-center.open { display: flex; }
+      .nav-center a { width: 100%; }
       .mobile-toggle { display: block; }
-      .hero h1 { font-size: 2.2rem; }
-      .hero { padding: 60px 0 40px; }
-      .stats-bar { gap: 24px; flex-wrap: wrap; }
+      .hero h1 { font-size: 2.5rem; }
+      .hero { padding: 80px 0 40px; }
+      .stats-bar { gap: 32px; flex-wrap: wrap; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
-      .product-card { padding: 28px 20px; }
+      .product-card { padding: 32px 24px; }
       .product-card .price { font-size: 2.25rem; }
     }
     @media (max-width: 480px) {
       .footer-grid { grid-template-columns: 1fr; }
       .stats-bar { flex-direction: column; gap: 16px; }
+      .features-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -345,24 +418,26 @@
         <a href="/" class="nav-brand">
           <img src="logo.png" alt="beamed.pro" />
         </a>
-        <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">Menu</button>
-        <ul class="nav-links" id="navLinks">
-          <li><a href="/">Home</a></li>
-          <li><a href="#product">Buy</a></li>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a href="#" id="loginBtn" class="btn-signin">Sign in with Discord</a></li>
-        </ul>
+        <div class="nav-center" id="navCenter">
+          <a href="/">Home</a>
+          <a href="#product">Buy</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="nav-right">
+          <button class="mobile-toggle" id="mobileToggle">Menu</button>
+          <a href="#" id="loginBtn" class="btn-primary">Sign in</a>
+        </div>
       </div>
     </nav>
 
     <!-- Hero -->
     <section class="hero">
       <div class="container">
-        <h1 class="reveal show">Premium Minecraft<br><span>Alt Accounts</span></h1>
+        <h1 class="reveal show"><span class="accent">Premium</span> <span>Minecraft<br>Alt Accounts</span></h1>
         <p class="reveal show" style="transition-delay:.1s">Instant automated delivery. 30-day replacement guarantee. Trusted by thousands.</p>
         <div class="btn-group reveal show" style="transition-delay:.2s">
-          <a href="#product" class="btn btn-green">Buy Account - $4.50</a>
-          <a href="#faq" class="btn btn-outline">FAQ</a>
+          <a href="#product" class="btn btn-white">Buy Account - $4.50</a>
+          <a href="#faq" class="btn btn-glass">FAQ</a>
         </div>
       </div>
     </section>
@@ -371,10 +446,10 @@
     <div class="stats-bar reveal">
       <div class="stat-item"><div class="num">3,200+</div><div class="label">Accounts Sold</div></div>
       <div class="stat-item"><div class="num">99.2%</div><div class="label">Uptime</div></div>
-      <div class="stat-item"><div class="num">&lt;2min</div><div class="label">Avg. Delivery</div></div>
+      <div class="stat-item"><div class="num">30 Day</div><div class="label">Replacement</div></div>
     </div>
 
-    <!-- Error message if Supabase not configured -->
+    <!-- Config error -->
     <div class="container">
       <div class="config-error" id="configError"></div>
     </div>
@@ -383,22 +458,23 @@
     <section class="section" id="product">
       <div class="container" style="text-align:center;">
         <h2 class="section-title reveal">One Account. Simple Price.</h2>
-        <p class="section-subtitle reveal" style="margin:0 auto 40px;">Premium Minecraft alt account - delivered instantly.</p>
+        <p class="section-subtitle reveal">Premium Minecraft alt account — delivered instantly after payment.</p>
+        <div class="product-wrap">
+          <div class="product-card glass reveal">
+            <span class="badge">Minecraft Account</span>
+            <h3>Premium Alt Account</h3>
+            <p class="desc">Full access. Change credentials on delivery. Hypixel ready.</p>
+            <div class="price">$4.50</div>
+            <p class="price-sub">One-time payment / Instant delivery</p>
+            <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-white">Buy Account - $4.50</a>
+          </div>
 
-        <div class="product-card reveal">
-          <span class="badge">Minecraft Account</span>
-          <h3>Premium Alt Account</h3>
-          <p class="desc">Full access. Change credentials on delivery. Hypixel ready.</p>
-          <div class="price">$4.50</div>
-          <p class="price-sub">One-time payment / Instant delivery</p>
-          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-green">Buy Account - $4.50</a>
-        </div>
-
-        <div class="reseller-card reveal">
-          <h4>Reseller Access</h4>
-          <p>Buy accounts for $3.50 each instead of $4.50. Lifetime access.</p>
-          <div class="price">$15.00</div>
-          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-outline">Buy Reseller Access - $15</a>
+          <div class="reseller-card glass reveal">
+            <h4>Reseller Access</h4>
+            <p>Buy accounts for $3.50 each instead of $4.50. Lifetime access.</p>
+            <div class="price">$15.00</div>
+            <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-glass">Buy Reseller Access - $15</a>
+          </div>
         </div>
       </div>
     </section>
@@ -406,22 +482,26 @@
     <!-- Features -->
     <section class="section">
       <div class="container">
-        <h2 class="section-title reveal" style="text-align:center;">Why beamed.pro?</h2>
-        <p class="section-subtitle reveal" style="text-align:center;margin:0 auto 48px;">We make buying alts simple and safe.</p>
+        <h2 class="section-title reveal">Why beamed.pro?</h2>
+        <p class="section-subtitle reveal">We make buying alts simple and safe.</p>
         <div class="features-grid">
-          <div class="feature-card reveal">
+          <div class="feature-card glass reveal">
+            <div class="icon">+</div>
             <h4>Instant Delivery</h4>
             <p>Get your account seconds after payment. Fully automated.</p>
           </div>
-          <div class="feature-card reveal">
+          <div class="feature-card glass reveal">
+            <div class="icon">=</div>
             <h4>Replacement Guarantee</h4>
             <p>30-day replacement if anything goes wrong. No questions asked.</p>
           </div>
-          <div class="feature-card reveal">
+          <div class="feature-card glass reveal">
+            <div class="icon">$</div>
             <h4>Crypto and Card</h4>
             <p>Pay with Bitcoin, Ethereum, or USD. Secure checkout.</p>
           </div>
-          <div class="feature-card reveal">
+          <div class="feature-card glass reveal">
+            <div class="icon">@</div>
             <h4>Discord Support</h4>
             <p>Join 5,000+ members. Support in under 30 minutes.</p>
           </div>
@@ -432,32 +512,32 @@
     <!-- FAQ -->
     <section class="section" id="faq">
       <div class="container">
-        <h2 class="section-title reveal" style="text-align:center;">FAQ</h2>
-        <p class="section-subtitle reveal" style="text-align:center;margin:0 auto 48px;">Everything you need to know.</p>
+        <h2 class="section-title reveal">FAQ</h2>
+        <p class="section-subtitle reveal">Everything you need to know.</p>
         <div class="faq-list">
           <div class="faq-item reveal">
-            <div class="faq-question" data-target="faq1">
+            <div class="faq-question">
               What is a Minecraft alt account?
             </div>
-            <div class="faq-answer" id="faq1">A Minecraft alt is an alternate account that lets you play with a different username, bypass server bans, or have multiple profiles. Ours are full-access - you can change the email and password immediately.</div>
+            <div class="faq-answer">A Minecraft alt is an alternate account that lets you play with a different username, bypass server bans, or have multiple profiles. Ours are full-access — you can change the email and password immediately.</div>
           </div>
           <div class="faq-item reveal">
-            <div class="faq-question" data-target="faq2">
+            <div class="faq-question">
               How fast is delivery?
             </div>
-            <div class="faq-answer" id="faq2">Delivery is instant and automated. You receive your account credentials within seconds of payment confirmation.</div>
+            <div class="faq-answer">Delivery is instant and automated. You receive your account credentials within seconds of payment confirmation.</div>
           </div>
           <div class="faq-item reveal">
-            <div class="faq-question" data-target="faq3">
+            <div class="faq-question">
               What payment methods do you accept?
             </div>
-            <div class="faq-answer" id="faq3">We accept Bitcoin, Ethereum, and USD via card. All payments are processed securely.</div>
+            <div class="faq-answer">We accept Bitcoin, Ethereum, and USD via card. All payments are processed securely.</div>
           </div>
           <div class="faq-item reveal">
-            <div class="faq-question" data-target="faq4">
+            <div class="faq-question">
               What is reseller access?
             </div>
-            <div class="faq-answer" id="faq4">Reseller access lets you buy accounts for $3.50 instead of $4.50. It's a one-time $15 fee for lifetime access to the lower price.</div>
+            <div class="faq-answer">Reseller access lets you buy accounts for $3.50 instead of $4.50. It's a one-time $15 fee for lifetime access to the lower price.</div>
           </div>
         </div>
       </div>
@@ -497,79 +577,52 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script>
-    // FAQ accordion
+    // FAQ
     document.querySelectorAll('.faq-question').forEach(function(el) {
       el.addEventListener('click', function() {
         this.parentElement.classList.toggle('open');
       });
     });
 
-    // Mobile menu toggle
+    // Mobile
     document.getElementById('mobileToggle').addEventListener('click', function() {
-      document.getElementById('navLinks').classList.toggle('open');
+      document.getElementById('navCenter').classList.toggle('open');
     });
-
-    // Close mobile menu on link click
-    document.querySelectorAll('.nav-links a').forEach(function(el) {
+    document.querySelectorAll('.nav-center a').forEach(function(el) {
       el.addEventListener('click', function() {
-        document.getElementById('navLinks').classList.remove('open');
+        document.getElementById('navCenter').classList.remove('open');
       });
     });
 
-    // Supabase auth
+    // Auth
     var supabase
-
     try {
-      if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'https://your-project-id.supabase.co') {
-        throw new Error('not configured')
-      }
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'https://your-project-id.supabase.co')
+        throw new Error()
       supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     } catch (e) {
       document.getElementById('configError').style.display = 'block'
-      document.getElementById('configError').innerHTML = 'Supabase not configured. Set your keys in <strong>supabase-config.js</strong> to enable Discord login.'
+      document.getElementById('configError').innerHTML = 'Supabase not configured. Set your keys in <strong>supabase-config.js</strong>.'
     }
 
-    // Login button
     document.getElementById('loginBtn').addEventListener('click', function(e) {
       e.preventDefault()
-
-      if (this.textContent === 'Dashboard') {
-        window.location.href = '/dashboard.html'
-        return
-      }
-
+      if (this.textContent === 'Dashboard') { window.location.href = '/dashboard.html'; return }
       if (!supabase) return
-
-      supabase.auth.signInWithOAuth({
-        provider: 'discord',
-        options: {
-          redirectTo: window.location.origin + '/dashboard.html'
-        }
-      })
+      supabase.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.origin + '/dashboard.html' } })
     })
 
-    // Check if already signed in
     if (supabase) {
-      supabase.auth.getSession().then(function(result) {
-        if (result.data.session) {
-          var btn = document.getElementById('loginBtn')
-          btn.textContent = 'Dashboard'
-        }
+      supabase.auth.getSession().then(function(r) {
+        if (r.data.session) document.getElementById('loginBtn').textContent = 'Dashboard'
       })
     }
 
     // Scroll reveal
     var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('show');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(function(el) {
-      observer.observe(el);
-    });
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('show') })
+    }, { threshold: .1 })
+    document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el) })
   </script>
 </body>
 </html>
