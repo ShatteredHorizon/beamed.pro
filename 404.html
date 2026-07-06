@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — beamed.pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a;
+      --surface: rgba(255,255,255,.02);
+      --border: rgba(255,255,255,.08);
+      --text: #fff;
+      --subtext: rgba(255,255,255,.6);
+      --muted: rgba(255,255,255,.4);
+      --green: #22c55e;
+      --inset: inset 0 1px 0 0 rgba(255,255,255,.12), inset 0 0 12px 0 rgba(255,255,255,.04);
+    }
+    html { background: var(--bg); }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 400px 300px at 50% 40%, hsla(140,100%,50%,.05), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--inset);
+      padding: 64px 48px;
+      text-align: center;
+      max-width: 460px;
+      width: 90%;
+    }
+    .card h1 { font-size: 5rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; color: var(--green); margin-bottom: 8px; }
+    .card h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 12px; }
+    .card p { font-size: .875rem; color: var(--subtext); margin-bottom: 28px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 999px;
+      font-size: .9rem;
+      font-weight: 600;
+      background: rgba(255,255,255,.9);
+      color: #000;
+      text-decoration: none;
+      box-shadow: 0 2px 8px -2px rgba(0,0,0,.2), inset 0 1px 0 0 rgba(255,255,255,.9), inset 0 -1px 2px 0 rgba(0,0,0,.08);
+      transition: all .2s;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { background: #fff; opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>404</h1>
+    <h2>Page not found</h2>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <a href="/" class="btn">Back Home</a>
+  </div>
+</body>
+</html>
