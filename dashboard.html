@@ -253,9 +253,47 @@
     .reveal { opacity: 0; transform: translateY(20px); transition: opacity .5s ease, transform .5s ease; }
     .reveal.show { opacity: 1; transform: translateY(0); }
 
-    @media (max-width: 600px) {
-      .mini-stats { grid-template-columns: 1fr; }
+    /* User rows */
+    .user-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
     }
+    .user-row-info { display: flex; align-items: center; gap: 12px; }
+    .user-row-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(34,197,94,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem; color: #4ade80;
+      flex-shrink: 0;
+    }
+    .user-row-name { font-size: .875rem; font-weight: 600; }
+    .user-row-email { font-size: .75rem; color: var(--subtext); margin-top: 1px; }
+    .user-row-toggles { display: flex; gap: 6px; }
+    .toggle-btn {
+      padding: 5px 12px; border-radius: 999px;
+      font-size: .7rem; font-weight: 600; font-family: inherit;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      cursor: pointer; transition: all .2s; letter-spacing: .02em;
+    }
+    .toggle-btn:hover { background: rgba(255,255,255,.03); }
+    .toggle-btn.on-green { background: rgba(34,197,94,.1); color: #4ade80; border-color: rgba(34,197,94,.25); }
+    .toggle-btn.on-red { background: rgba(255,122,138,.1); color: #ff7a8a; border-color: rgba(255,122,138,.25); }
+    .toggle-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Banned screen */
+    #bannedScreen { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    #bannedScreen h2 { font-size: 2rem; font-weight: 800; margin-bottom: 12px; }
+    #bannedScreen p { color: var(--subtext); font-size: 1rem; }
+    #bannedScreen .countdown { color: var(--muted); font-size: .875rem; margin-top: 8px; }
+    #bannedScreen .countdown span { font-weight: 700; color: var(--text); }
   </style>
 </head>
 <body>
@@ -274,6 +312,14 @@
   <div class="container page-wrap">
     <div id="loadingState" class="loading">Loading...</div>
     <div id="errorState" class="config-error" style="display:none;"></div>
+
+    <!-- Banned screen -->
+    <div id="bannedScreen" style="display:none;">
+      <h2>You have been banned</h2>
+      <p>You are no longer allowed to access beamed.pro.</p>
+      <p class="countdown">Redirecting in <span id="bannedCountdown">5</span> seconds...</p>
+    </div>
+
     <div id="dashContent" style="display:none;">
 
       <!-- Profile header -->
@@ -362,21 +408,10 @@
         <!-- Manage Users -->
         <div class="dash-card glass reveal" style="padding:24px 32px;">
           <h4 style="font-weight:600;font-size:.95rem;margin-bottom:4px;">Manage Users</h4>
-          <p style="font-size:.85rem;color:var(--subtext);margin-bottom:16px;">Look up a user by email to grant or remove reseller access.</p>
-          <div style="display:flex;gap:10px;">
-            <input type="email" id="lookupEmail" placeholder="user@example.com" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:.875rem;outline:none;box-shadow:var(--inset);" />
-            <button id="lookupBtn" class="btn btn-glass" style="width:auto;padding:10px 24px;font-size:.85rem;">Look Up</button>
-          </div>
-          <div id="lookupResult" style="display:none;margin-top:16px;padding:16px;background:var(--surface);border-radius:12px;border:1px solid var(--border);">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-              <div>
-                <div id="lookupName" style="font-weight:600;font-size:.9rem;"></div>
-                <div id="lookupEmailDisplay" style="font-size:.8rem;color:var(--subtext);margin-top:2px;"></div>
-              </div>
-              <button id="toggleResellerBtn" class="btn btn-sm btn-glass" style="width:auto;padding:8px 20px;font-size:.8rem;"></button>
-            </div>
-          </div>
-          <div id="lookupError" style="display:none;margin-top:12px;font-size:.85rem;color:#ff7a8a;text-align:center;"></div>
+          <p style="font-size:.85rem;color:var(--subtext);margin-bottom:16px;">Toggle reseller access or ban users.</p>
+          <div id="usersLoading" style="text-align:center;padding:20px;color:var(--muted);font-size:.875rem;">Loading users...</div>
+          <div id="usersList" style="display:flex;flex-direction:column;gap:8px;"></div>
+          <div id="usersError" style="display:none;margin-top:12px;font-size:.85rem;color:#ff7a8a;text-align:center;"></div>
         </div>
       </div>
 
@@ -430,16 +465,18 @@
           placeholder.textContent = (displayName.textContent || '?')[0].toUpperCase()
         }
 
-        // Admin check
-        if (user.email === 'alicarian9@gmail.com') {
-          document.getElementById('adminPanel').style.display = 'block'
-          loadAdminStats()
-          setupUserLookup()
-        }
+        // Check profile (banned + reseller)
+        supabase.from('profiles').select('is_reseller,banned').eq('id', user.id).single().then(function(r) {
+          var profile = r.data
 
-        // Check reseller status
-        supabase.from('profiles').select('is_reseller').eq('id', user.id).single().then(function(r) {
-          var isReseller = r.data && r.data.is_reseller
+          // Banned check (skip for admin)
+          if (profile && profile.banned && user.email !== 'alicarian9@gmail.com') {
+            showBannedScreen()
+            return
+          }
+
+          // Handle reseller status
+          var isReseller = profile && profile.is_reseller
           var statusBadge = document.getElementById('resellerBadgeStatus')
           var resellerCard = document.getElementById('resellerCard')
 
@@ -456,22 +493,29 @@
             statusBadge.textContent = 'No'
             statusBadge.className = 'status-badge no'
           }
-        }).catch(function() {})
 
-        loading.style.display = 'none'
-        content.style.display = 'block'
+          loading.style.display = 'none'
+          content.style.display = 'block'
 
-        var obs = new IntersectionObserver(function(entries) {
-          entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('show') })
-        }, { threshold: .1 })
-        document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el) })
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('show') })
+          }, { threshold: .1 })
+          document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el) })
+        }).catch(function() { window.location.href = '/' })
+
+        // Admin check
+        if (user.email === 'alicarian9@gmail.com') {
+          document.getElementById('adminPanel').style.display = 'block'
+          loadAdminStats()
+          loadAllUsers()
+        }
       }).catch(function() { window.location.href = '/' })
 
       document.getElementById('signOutBtn').addEventListener('click', function() {
         supabase.auth.signOut().then(function() { window.location.href = '/' })
       })
 
-      // --- Admin functions (alicarian9@gmail.com only) ---
+      // --- Admin functions ---
 
       function loadAdminStats() {
         var key = '5916197|k5ytb24rj3Xm2CxX8Z2f96dbpYtu5kS3CMO9ZBgh923e00b6'
@@ -500,66 +544,81 @@
         })
       }
 
-      function setupUserLookup() {
-        document.getElementById('lookupBtn').addEventListener('click', lookupUser)
-        document.getElementById('lookupEmail').addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') lookupUser()
-        })
+      function showBannedScreen() {
+        loading.style.display = 'none'
+        content.style.display = 'none'
+        document.getElementById('bannedScreen').style.display = 'flex'
+        var count = 5
+        var el = document.getElementById('bannedCountdown')
+        var interval = setInterval(function() {
+          count--
+          el.textContent = count
+          if (count <= 0) { clearInterval(interval); window.location.href = '/' }
+        }, 1000)
       }
 
-      var currentLookupId = null
-
-      function lookupUser() {
-        var email = document.getElementById('lookupEmail').value.trim()
-        if (!email) return
-        document.getElementById('lookupError').style.display = 'none'
-        document.getElementById('lookupResult').style.display = 'none'
-        document.getElementById('lookupBtn').textContent = 'Searching...'
-        document.getElementById('lookupBtn').disabled = true
-
-        supabase.from('profiles').select('id,display_name,email,is_reseller').eq('email', email).maybeSingle().then(function(r) {
-          document.getElementById('lookupBtn').textContent = 'Look Up'
-          document.getElementById('lookupBtn').disabled = false
-          if (r.error || !r.data) {
-            document.getElementById('lookupError').textContent = r.error ? r.error.message : 'No user found with that email.'
-            document.getElementById('lookupError').style.display = 'block'
-            return
-          }
-          var profile = r.data
-          currentLookupId = profile.id
-          document.getElementById('lookupName').textContent = profile.display_name || 'Unknown'
-          document.getElementById('lookupEmailDisplay').textContent = profile.email || email
-          var btn = document.getElementById('toggleResellerBtn')
-          if (profile.is_reseller) {
-            btn.textContent = 'Remove Reseller'
-            btn.style.background = 'rgba(255,122,138,.1)'
-            btn.style.color = '#ff7a8a'
-            btn.style.border = '1px solid rgba(255,122,138,.2)'
-          } else {
-            btn.textContent = 'Grant Reseller'
-            btn.style.background = 'rgba(34,197,94,.1)'
-            btn.style.color = '#4ade80'
-            btn.style.border = '1px solid rgba(34,197,94,.2)'
-          }
-          btn.onclick = function() { toggleReseller(profile.id, !profile.is_reseller) }
-          document.getElementById('lookupResult').style.display = 'block'
-        })
-      }
-
-      function toggleReseller(userId, newValue) {
-        var btn = document.getElementById('toggleResellerBtn')
-        btn.disabled = true
-        btn.textContent = 'Saving...'
-        supabase.from('profiles').update({ is_reseller: newValue }).eq('id', userId).then(function(r) {
-          btn.disabled = false
+      function loadAllUsers() {
+        supabase.from('profiles').select('id,display_name,email,is_reseller,banned').order('created_at', { ascending: false }).then(function(r) {
+          document.getElementById('usersLoading').style.display = 'none'
           if (r.error) {
-            document.getElementById('lookupError').textContent = 'Error: ' + r.error.message
-            document.getElementById('lookupError').style.display = 'block'
-            btn.textContent = 'Error'
+            document.getElementById('usersError').textContent = 'Error loading users: ' + r.error.message
+            document.getElementById('usersError').style.display = 'block'
             return
           }
-          lookupUser()
+          var list = document.getElementById('usersList')
+          list.innerHTML = ''
+          r.data.forEach(function(u) {
+            var row = document.createElement('div')
+            row.className = 'user-row'
+            var initial = (u.display_name || u.email || '?')[0].toUpperCase()
+            row.innerHTML =
+              '<div class="user-row-info">' +
+                '<div class="user-row-avatar">' + initial + '</div>' +
+                '<div>' +
+                  '<div class="user-row-name">' + escapeHtml(u.display_name || 'Unknown') + '</div>' +
+                  '<div class="user-row-email">' + escapeHtml(u.email || '') + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="user-row-toggles" data-id="' + u.id + '">' +
+                '<button class="toggle-btn' + (u.is_reseller ? ' on-green' : '') + '" data-field="is_reseller">Reseller</button>' +
+                '<button class="toggle-btn' + (u.banned ? ' on-red' : '') + '" data-field="banned">Banned</button>' +
+              '</div>'
+            list.appendChild(row)
+          })
+          // Toggle handlers
+          list.querySelectorAll('.toggle-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var userId = btn.parentElement.getAttribute('data-id')
+              var field = btn.getAttribute('data-field')
+              var current = btn.classList.contains('on-green') || btn.classList.contains('on-red')
+              toggleUserField(userId, field, !current, btn)
+            })
+          })
         })
+      }
+
+      function toggleUserField(userId, field, newValue, btn) {
+        var rowBtns = btn.parentElement.querySelectorAll('.toggle-btn')
+        rowBtns.forEach(function(b) { b.disabled = true })
+        var update = {}
+        update[field] = newValue
+        supabase.from('profiles').update(update).eq('id', userId).then(function(r) {
+          rowBtns.forEach(function(b) { b.disabled = false })
+          if (r.error) {
+            document.getElementById('usersError').textContent = 'Error: ' + r.error.message
+            document.getElementById('usersError').style.display = 'block'
+            return
+          }
+          // Update button state
+          var className = field === 'is_reseller' ? 'on-green' : 'on-red'
+          btn.classList.toggle(className, newValue)
+        })
+      }
+
+      function escapeHtml(str) {
+        var div = document.createElement('div')
+        div.appendChild(document.createTextNode(str))
+        return div.innerHTML
       }
     }
   </script>

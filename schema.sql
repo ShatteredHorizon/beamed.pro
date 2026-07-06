@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   avatar_url TEXT,
   email TEXT,
   is_reseller BOOLEAN DEFAULT FALSE,
+  banned BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
