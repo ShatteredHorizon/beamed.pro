@@ -1,6 +1,5 @@
--- Run this in Supabase SQL Editor to set up the profiles table
+-- Run this in Supabase SQL Editor
 
--- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   discord_id TEXT,
@@ -10,7 +9,27 @@ CREATE TABLE IF NOT EXISTS profiles (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create a trigger to auto-create profile on signup
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Allow users to read their own profile
+CREATE POLICY "users can read own profile"
+  ON profiles
+  FOR SELECT
+  USING (auth.uid() = id);
+
+-- Allow users to update their own profile
+CREATE POLICY "users can update own profile"
+  ON profiles
+  FOR UPDATE
+  USING (auth.uid() = id);
+
+-- Allow insert from trigger (system)
+CREATE POLICY "system can insert profiles"
+  ON profiles
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -30,15 +49,3 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION handle_new_user();
-
--- Allow users to read their own profile
-CREATE POLICY "Users can read own profile"
-  ON profiles
-  FOR SELECT
-  USING (auth.uid() = id);
-
--- Allow users to update their own profile (for reseller status changes)
-CREATE POLICY "Users can update own profile"
-  ON profiles
-  FOR UPDATE
-  USING (auth.uid() = id);
