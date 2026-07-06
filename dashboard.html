@@ -285,7 +285,7 @@
         <div class="user-info">
           <h1 id="userDisplayName">User</h1>
           <div class="tag" id="userEmail"></div>
-          <div class="reseller-badge" id="resellerBadge" style="display:none;">Reseller - 30% off</div>
+          <div class="reseller-badge" id="resellerBadge" style="display:none;">Reseller - 25% off</div>
         </div>
       </div>
 
@@ -309,7 +309,7 @@
       <div class="status-card glass reveal" id="resellerStatus">
         <div class="left">
           <h4>Reseller Access</h4>
-          <p id="resellerDesc">Get 30% off all accounts — $3.15 instead of $4.50</p>
+          <p id="resellerDesc">Get 25% off all accounts — $3.38 instead of $4.50</p>
         </div>
         <span class="status-badge" id="resellerBadgeStatus">Loading...</span>
       </div>
@@ -326,7 +326,7 @@
 
         <div class="dash-card glass reveal" id="resellerCard">
           <h3>Upgrade to Reseller</h3>
-          <p>Get <strong>30% off</strong> all accounts — $3.15 instead of $4.50. Lifetime access.</p>
+          <p>Get <strong>25% off</strong> all accounts — $3.38 instead of $4.50. Lifetime access.</p>
           <div class="price">$15.00</div>
           <div class="price-label">One-time fee / Lifetime reseller pricing</div>
           <a href="https://beamed-pro.mysellauth.com/product/reseller-access" target="_blank" class="btn btn-glass">Buy Reseller Access - $15</a>
@@ -349,25 +349,41 @@
       <!-- Admin panel (alicarian9@gmail.com only) -->
       <div id="adminPanel" style="display:none;">
         <h3 style="font-size:1.1rem;font-weight:600;margin:40px 0 16px;" class="reveal">Admin</h3>
-        <div class="mini-stats reveal">
-          <div class="mini-stat glass">
-            <div class="num">1,247</div>
-            <div class="label">Site Visits (30d)</div>
-          </div>
-          <div class="mini-stat glass">
-            <div class="num">86</div>
-            <div class="label">Accounts Sold</div>
-          </div>
-          <div class="mini-stat glass">
-            <div class="num">$523.40</div>
-            <div class="label">Revenue (30d)</div>
+
+        <!-- SelldAuth API setup -->
+        <div class="dash-card glass reveal" style="padding:24px 32px;margin-bottom:16px;">
+          <h4 style="font-weight:600;font-size:.95rem;margin-bottom:4px;">SelldAuth API</h4>
+          <p style="font-size:.85rem;color:var(--subtext);margin-bottom:16px;">Enter your API key and Shop ID to load live stats.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <input type="password" id="apiKeyInput" placeholder="API Key" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:.875rem;outline:none;box-shadow:var(--inset);" />
+            <input type="text" id="shopIdInput" placeholder="Shop ID" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:.875rem;outline:none;box-shadow:var(--inset);" />
+            <button id="fetchStatsBtn" class="btn btn-white" style="width:auto;padding:10px 24px;font-size:.85rem;">Load Stats</button>
           </div>
         </div>
+
+        <!-- Stats display -->
+        <div class="mini-stats reveal" id="statsDisplay" style="display:none;">
+          <div class="mini-stat glass">
+            <div class="num" id="statProductsSold">-</div>
+            <div class="label">Products Sold</div>
+          </div>
+          <div class="mini-stat glass">
+            <div class="num" id="statCustomers">-</div>
+            <div class="label">Total Customers</div>
+          </div>
+          <div class="mini-stat glass">
+            <div class="num" id="statRevenue">-</div>
+            <div class="label">Revenue</div>
+          </div>
+        </div>
+
+        <div id="statsError" style="display:none;padding:12px 16px;background:rgba(255,122,138,.08);border:1px solid rgba(255,122,138,.2);border-radius:10px;color:#ff7a8a;font-size:.85rem;text-align:center;margin-bottom:16px;"></div>
+
         <div class="dash-card glass reveal" style="padding:24px 32px;margin-bottom:0;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
             <div>
-              <h4 style="font-weight:600;font-size:.95rem;">Users</h4>
-              <p style="font-size:.85rem;color:var(--subtext);margin-top:2px;margin-bottom:0;">Manage reseller access</p>
+              <h4 style="font-weight:600;font-size:.95rem;">Manage Users</h4>
+              <p style="font-size:.85rem;color:var(--subtext);margin-top:2px;margin-bottom:0;">Grant or remove reseller access</p>
             </div>
             <a href="https://supabase.com/dashboard/project/tpnoaqbwhjgdkurbcccu/editor" target="_blank" class="btn btn-glass" style="width:auto;padding:10px 20px;font-size:.85rem;">Open Supabase</a>
           </div>
@@ -427,6 +443,9 @@
         // Admin check
         if (user.email === 'alicarian9@gmail.com') {
           document.getElementById('adminPanel').style.display = 'block'
+          // Restore saved API credentials
+          if (localStorage.getItem('sa_api_key')) document.getElementById('apiKeyInput').value = localStorage.getItem('sa_api_key')
+          if (localStorage.getItem('sa_shop_id')) document.getElementById('shopIdInput').value = localStorage.getItem('sa_shop_id')
         }
 
         // Check reseller status
@@ -437,13 +456,13 @@
 
           if (isReseller) {
             badge.style.display = 'inline-block'
-            document.getElementById('normalPrice').textContent = '$3.15'
-            document.getElementById('normalPriceBtn').textContent = '$3.15'
-            document.getElementById('priceLabel').textContent = 'One-time payment (30% reseller discount)'
+            document.getElementById('normalPrice').textContent = '$3.38'
+            document.getElementById('normalPriceBtn').textContent = '$3.38'
+            document.getElementById('priceLabel').textContent = 'One-time payment (25% reseller discount)'
             resellerCard.style.display = 'none'
             statusBadge.textContent = 'Yes'
             statusBadge.className = 'status-badge yes'
-            document.getElementById('resellerDesc').textContent = 'You have lifetime reseller access with 30% off all accounts.'
+            document.getElementById('resellerDesc').textContent = 'You have lifetime reseller access with 25% off all accounts.'
           } else {
             statusBadge.textContent = 'No'
             statusBadge.className = 'status-badge no'
@@ -462,6 +481,58 @@
       document.getElementById('signOutBtn').addEventListener('click', function() {
         supabase.auth.signOut().then(function() { window.location.href = '/' })
       })
+
+      // SelldAuth API fetch
+      var fetchBtn = document.getElementById('fetchStatsBtn')
+      if (fetchBtn) {
+        fetchBtn.addEventListener('click', function() {
+          var key = document.getElementById('apiKeyInput').value.trim()
+          var shopId = document.getElementById('shopIdInput').value.trim()
+          if (!key || !shopId) { showStatsError('Enter both API Key and Shop ID.'); return }
+
+          localStorage.setItem('sa_api_key', key)
+          localStorage.setItem('sa_shop_id', shopId)
+
+          fetchBtn.disabled = true
+          fetchBtn.textContent = 'Loading...'
+          hideStatsError()
+
+          var headers = { 'Authorization': 'Bearer ' + key, 'Accept': 'application/json' }
+
+          // Fetch stats
+          Promise.all([
+            fetch('https://api.sellauth.com/v1/shops/' + shopId + '/stats', { headers: headers }).then(function(r) { if (!r.ok) throw new Error('Stats: ' + r.status); return r.json() }),
+            fetch('https://api.sellauth.com/v1/shops/' + shopId + '/analytics', { headers: headers }).then(function(r) { if (!r.ok) throw new Error('Analytics: ' + r.status); return r.json() })
+          ]).then(function(results) {
+            var stats = results[0]
+            var analytics = results[1]
+
+            document.getElementById('statProductsSold').textContent = (stats.products_sold || 0).toLocaleString()
+            document.getElementById('statCustomers').textContent = (stats.total_customers || 0).toLocaleString()
+
+            var revenue = analytics.revenue || analytics.total_revenue || 0
+            document.getElementById('statRevenue').textContent = '$' + Number(revenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+            document.getElementById('statsDisplay').style.display = 'grid'
+            fetchBtn.disabled = false
+            fetchBtn.textContent = 'Load Stats'
+            document.getElementById('statsDisplay').querySelectorAll('.reveal').forEach(function(el) { el.classList.add('show') })
+          }).catch(function(err) {
+            showStatsError('Failed to fetch: ' + err.message)
+            fetchBtn.disabled = false
+            fetchBtn.textContent = 'Load Stats'
+          })
+        })
+      }
+
+      function showStatsError(msg) {
+        var el = document.getElementById('statsError')
+        el.textContent = msg
+        el.style.display = 'block'
+      }
+      function hideStatsError() {
+        document.getElementById('statsError').style.display = 'none'
+      }
     }
   </script>
 </body>
