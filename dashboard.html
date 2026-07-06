@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>beamed.pro &mdash; Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ctp-base: #131319;
+      --ctp-mantle: #0e0e12;
+      --ctp-crust: #08080a;
+      --ctp-surface0: #1a1a22;
+      --ctp-surface1: #2a2a35;
+      --ctp-overlay0: #4a4a58;
+      --ctp-overlay1: #6f6f7a;
+      --ctp-overlay2: #9999a3;
+      --ctp-text: #ededf0;
+      --ctp-subtext0: #b4b4be;
+      --green: #22c55e;
+      --green-bright: #4ade80;
+      --green-dim: #16a34a;
+      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    html { background: var(--ctp-crust); }
+    body {
+      font-family: var(--font-sans);
+      background: var(--ctp-crust);
+      color: var(--ctp-text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { color: var(--green); text-decoration: none; }
+    a:hover { opacity: .8; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(8,8,10,.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--green);
+      letter-spacing: -.02em;
+    }
+    .nav-brand .logo-box {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 800; color: #000;
+    }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+    .nav-links a, .nav-links button {
+      font-family: var(--font-sans);
+      font-size: .875rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 10px;
+      color: var(--ctp-subtext0);
+      transition: all .15s;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+    .nav-links a:hover, .nav-links button:hover { color: var(--ctp-text); background: rgba(255,255,255,.05); }
+    .nav-links .btn-signout {
+      background: rgba(255,255,255,.08);
+      color: var(--ctp-text);
+      font-weight: 500;
+    }
+    .nav-links .btn-signout:hover { background: rgba(255,255,255,.12); opacity: 1; }
+
+    /* Dashboard */
+    .dash-header {
+      padding: 48px 0 32px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--ctp-surface0);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--green);
+      background: rgba(34,197,94,.1);
+    }
+    .user-info h1 { font-size: 1.5rem; font-weight: 700; }
+    .user-info .tag { font-size: .85rem; color: var(--ctp-overlay2); margin-top: 2px; }
+    .user-info .reseller-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+      background: rgba(34,197,94,.12);
+      color: var(--green);
+      margin-top: 6px;
+    }
+
+    /* Cards */
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 700px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    .dash-card {
+      background: var(--ctp-base);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    .dash-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+    .dash-card p { font-size: .875rem; color: var(--ctp-subtext0); margin-bottom: 20px; }
+    .dash-card .price { font-size: 2rem; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+    .dash-card .price-label { font-size: .8rem; color: var(--ctp-overlay2); margin-bottom: 20px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+      transition: all .15s;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-green { background: var(--green); color: #000; }
+    .btn-green:hover { background: var(--green-bright); color: #000; opacity: 1; }
+    .btn-outline {
+      background: transparent;
+      color: var(--ctp-text);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green); opacity: 1; }
+
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Status messages */
+    .msg {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: .875rem;
+      margin-top: 16px;
+      display: none;
+    }
+    .msg.show { display: block; }
+    .msg.success { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+    .msg.error { background: rgba(255,122,138,.1); color: #ff7a8a; border: 1px solid rgba(255,122,138,.2); }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      color: var(--ctp-overlay2);
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="nav-brand">
+        <span class="logo-box">B</span>
+        beamed.pro
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><button id="signOutBtn" class="btn-signout">Sign Out</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="loadingState" class="loading">Loading...</div>
+
+    <div id="dashContent" style="display:none;">
+      <div class="dash-header">
+        <div class="avatar">
+          <img id="userAvatar" src="" alt="" style="display:none;" />
+          <div class="avatar-placeholder" id="avatarPlaceholder">?</div>
+        </div>
+        <div class="user-info">
+          <h1 id="userDisplayName">User</h1>
+          <div class="tag" id="userEmail"></div>
+          <div class="reseller-badge" id="resellerBadge" style="display:none;">Reseller</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <h3>Buy Account</h3>
+          <p>Premium Minecraft alt account. Full access. Instant delivery.</p>
+          <div class="price" id="normalPrice">$4.50</div>
+          <div class="price-label">One-time payment</div>
+          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-green">Buy Account &mdash; <span id="normalPriceBtn">$4.50</span></a>
+        </div>
+
+        <div class="dash-card" id="resellerCard">
+          <h3>Reseller Access</h3>
+          <p>Get accounts for <strong>$3.50</strong> each instead of $4.50. Lifetime access.</p>
+          <div class="price">$15.00</div>
+          <div class="price-label">One-time fee &bull; Lifetime reseller pricing</div>
+          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-outline">Buy Reseller Access &mdash; $15</a>
+        </div>
+      </div>
+
+      <div class="msg" id="statusMsg"></div>
+    </div>
+  </div>
+
+  <script src="supabase-config.js"></script>
+  <script>
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const loadingState = document.getElementById('loadingState')
+    const dashContent = document.getElementById('dashContent')
+    const userDisplayName = document.getElementById('userDisplayName')
+    const userEmail = document.getElementById('userEmail')
+    const userAvatar = document.getElementById('userAvatar')
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder')
+    const resellerBadge = document.getElementById('resellerBadge')
+    const statusMsg = document.getElementById('statusMsg')
+
+    function showMsg(text, type) {
+      statusMsg.textContent = text
+      statusMsg.className = 'msg show ' + type
+    }
+
+    async function loadDashboard() {
+      const { data: { session }, error } = await supabase.auth.getSession()
+
+      if (!session || !session.user) {
+        window.location.href = '/'
+        return
+      }
+
+      const user = session.user
+      const meta = user.user_metadata || {}
+
+      userDisplayName.textContent = meta.full_name || meta.preferred_username || user.email || 'User'
+      userEmail.textContent = user.email || ''
+
+      if (meta.avatar_url) {
+        userAvatar.src = meta.avatar_url
+        userAvatar.style.display = 'block'
+        avatarPlaceholder.style.display = 'none'
+      } else {
+        const initial = (userDisplayName.textContent || '?')[0].toUpperCase()
+        avatarPlaceholder.textContent = initial
+      }
+
+      // Check if user is reseller from profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_reseller')
+        .eq('id', user.id)
+        .single()
+
+      if (profile && profile.is_reseller) {
+        resellerBadge.style.display = 'inline-block'
+        document.getElementById('normalPrice').textContent = '$3.50'
+        document.getElementById('normalPriceBtn').textContent = '$3.50'
+        document.getElementById('resellerCard').style.display = 'none'
+      }
+
+      loadingState.style.display = 'none'
+      dashContent.style.display = 'block'
+    }
+
+    loadDashboard()
+
+    document.getElementById('signOutBtn').addEventListener('click', async function() {
+      await supabase.auth.signOut()
+      window.location.href = '/'
+    })
+  </script>
+</body>
+</html>
