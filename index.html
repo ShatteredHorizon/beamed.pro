@@ -4,52 +4,46 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>beamed.pro &mdash; Premium Minecraft Alt Accounts</title>
-  <meta name="description" content="Premium Minecraft alt accounts — instant delivery, replacement guarantee." />
+  <meta name="description" content="Premium Minecraft alt accounts - instant delivery, replacement guarantee." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --ctp-base: #131319;
-      --ctp-mantle: #0e0e12;
-      --ctp-crust: #08080a;
-      --ctp-surface0: #1a1a22;
-      --ctp-surface1: #2a2a35;
-      --ctp-surface2: #3a3a48;
-      --ctp-overlay0: #4a4a58;
-      --ctp-overlay1: #6f6f7a;
-      --ctp-overlay2: #9999a3;
-      --ctp-text: #ededf0;
-      --ctp-subtext0: #b4b4be;
-      --ctp-subtext1: #d2d2d8;
+      --bg: #08080a;
+      --mantle: #0e0e12;
+      --base: #131319;
+      --surface0: #1a1a22;
+      --surface1: #2a2a35;
+      --border: rgba(255,255,255,.08);
+      --text: #ededf0;
+      --subtext: #b4b4be;
+      --muted: #6f6f7a;
       --green: #22c55e;
-      --green-bright: #4ade80;
-      --green-dim: #16a34a;
-      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --green-hover: #16a34a;
     }
-    html { background: var(--ctp-crust); }
+    html { background: var(--bg); }
     body {
-      font-family: var(--font-sans);
-      background: var(--ctp-crust);
-      color: var(--ctp-text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
       overflow-x: hidden;
     }
-    a { color: var(--green); text-decoration: none; transition: opacity .15s; }
+    a { color: var(--green); text-decoration: none; }
     a:hover { opacity: .8; }
-    ::selection { background: var(--green); color: var(--ctp-crust); }
 
     .page-wrap { min-height: 100vh; display: flex; flex-direction: column; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; width: 100%; }
 
     /* Navbar */
     .navbar {
       background: rgba(8,8,10,.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 100;
@@ -61,36 +55,25 @@
       gap: 10px;
       font-weight: 700;
       font-size: 1.25rem;
-      color: var(--green);
+      color: var(--text);
       letter-spacing: -.02em;
     }
-    .nav-brand .logo-box {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: var(--green);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .85rem;
-      font-weight: 800;
-      color: #000;
-    }
+    .nav-brand img { height: 32px; width: auto; }
     .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
     .nav-links a, .nav-links button {
-      font-family: var(--font-sans);
+      font-family: inherit;
       font-size: .875rem;
       font-weight: 500;
       padding: 8px 14px;
       border-radius: 10px;
-      color: var(--ctp-subtext0);
+      color: var(--subtext);
       transition: all .15s;
       border: none;
       background: none;
       cursor: pointer;
     }
     .nav-links a:hover, .nav-links button:hover {
-      color: var(--ctp-text);
+      color: var(--text);
       background: rgba(255,255,255,.05);
     }
     .nav-links .btn-signin {
@@ -98,8 +81,8 @@
       color: #000;
       font-weight: 600;
     }
-    .nav-links .btn-signin:hover { background: var(--green-bright); color: #000; opacity: 1; }
-    .mobile-toggle { display: none; background: none; border: none; color: var(--ctp-text); font-size: 1.5rem; cursor: pointer; padding: 8px; }
+    .nav-links .btn-signin:hover { background: var(--green-hover); color: #000; opacity: 1; }
+    .mobile-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; padding: 8px; }
 
     /* Hero */
     .hero {
@@ -111,13 +94,12 @@
       font-weight: 800;
       letter-spacing: -.03em;
       line-height: 1.1;
-      color: var(--ctp-text);
       margin-bottom: 16px;
     }
     .hero h1 span { color: var(--green); }
     .hero p {
       font-size: 1.125rem;
-      color: var(--ctp-subtext0);
+      color: var(--subtext);
       max-width: 550px;
       margin: 0 auto 32px;
     }
@@ -132,15 +114,15 @@
       font-weight: 600;
       cursor: pointer;
       border: none;
-      font-family: var(--font-sans);
+      font-family: inherit;
       transition: all .15s;
     }
     .btn-green { background: var(--green); color: #000; }
-    .btn-green:hover { background: var(--green-bright); color: #000; opacity: 1; }
+    .btn-green:hover { background: var(--green-hover); color: #000; opacity: 1; }
     .btn-outline {
       background: transparent;
-      color: var(--ctp-text);
-      border: 1px solid rgba(255,255,255,.1);
+      color: var(--text);
+      border: 1px solid var(--surface1);
     }
     .btn-outline:hover { border-color: var(--green); color: var(--green); opacity: 1; }
 
@@ -150,22 +132,22 @@
       justify-content: center;
       gap: 60px;
       padding: 36px 0;
-      border-top: 1px solid rgba(255,255,255,.05);
-      border-bottom: 1px solid rgba(255,255,255,.05);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
     .stat-item { text-align: center; }
     .stat-item .num { font-size: 1.5rem; font-weight: 800; color: var(--green); }
-    .stat-item .label { font-size: .85rem; color: var(--ctp-overlay2); margin-top: 2px; }
+    .stat-item .label { font-size: .85rem; color: var(--muted); margin-top: 2px; }
 
     /* Sections */
     .section { padding: 80px 0; }
     .section-title { font-size: 1.875rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 12px; }
-    .section-subtitle { color: var(--ctp-subtext0); max-width: 500px; margin-bottom: 48px; }
+    .section-subtitle { color: var(--subtext); max-width: 500px; margin-bottom: 48px; }
 
     /* Product */
     .product-card {
-      background: var(--ctp-base);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--base);
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 40px;
       text-align: center;
@@ -185,15 +167,15 @@
       margin-bottom: 16px;
     }
     .product-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
-    .product-card .desc { font-size: .875rem; color: var(--ctp-subtext0); margin-bottom: 20px; }
+    .product-card .desc { font-size: .875rem; color: var(--subtext); margin-bottom: 20px; }
     .product-card .price { font-size: 3rem; font-weight: 800; color: var(--green); margin-bottom: 8px; }
-    .product-card .price-sub { font-size: .875rem; color: var(--ctp-overlay2); margin-bottom: 24px; }
+    .product-card .price-sub { font-size: .875rem; color: var(--muted); margin-bottom: 24px; }
     .product-card .btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: 16px 28px; }
 
-    /* Reseller upsell */
+    /* Reseller */
     .reseller-card {
-      background: var(--ctp-base);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--base);
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 32px;
       text-align: center;
@@ -201,7 +183,7 @@
       margin: 24px auto 0;
     }
     .reseller-card h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
-    .reseller-card p { font-size: .85rem; color: var(--ctp-subtext0); margin-bottom: 12px; }
+    .reseller-card p { font-size: .85rem; color: var(--subtext); margin-bottom: 12px; }
     .reseller-card .price { font-size: 1.5rem; font-weight: 700; color: var(--green); margin-bottom: 16px; }
     .reseller-card .btn { width: 100%; justify-content: center; }
 
@@ -212,21 +194,20 @@
       gap: 16px;
     }
     .feature-card {
-      background: var(--ctp-base);
-      border: 1px solid rgba(255,255,255,.05);
+      background: var(--base);
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 28px 24px;
       text-align: center;
     }
-    .feature-card .icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
     .feature-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
-    .feature-card p { font-size: .85rem; color: var(--ctp-subtext0); }
+    .feature-card p { font-size: .85rem; color: var(--subtext); }
 
     /* FAQ */
     .faq-list { max-width: 660px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
     .faq-item {
-      background: var(--ctp-base);
-      border: 1px solid rgba(255,255,255,.05);
+      background: var(--base);
+      border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
     }
@@ -239,17 +220,14 @@
       font-weight: 500;
       font-size: 1rem;
       user-select: none;
-      transition: background .15s;
     }
     .faq-question:hover { background: rgba(255,255,255,.03); }
-    .faq-question .arrow { transition: transform .2s; color: var(--ctp-overlay2); font-size: .8rem; }
-    .faq-item.open .faq-question .arrow { transform: rotate(180deg); }
     .faq-answer {
       max-height: 0;
       overflow: hidden;
       transition: max-height .2s ease, padding .2s ease;
       padding: 0 20px;
-      color: var(--ctp-subtext0);
+      color: var(--subtext);
       font-size: .925rem;
       line-height: 1.6;
     }
@@ -258,9 +236,9 @@
     /* Footer */
     .footer {
       margin-top: auto;
-      border-top: 1px solid rgba(255,255,255,.05);
+      border-top: 1px solid var(--border);
       padding: 48px 0 24px;
-      background: var(--ctp-mantle);
+      background: var(--mantle);
     }
     .footer-grid {
       display: grid;
@@ -269,25 +247,39 @@
       margin-bottom: 32px;
     }
     .footer-brand .brand-name { font-weight: 700; font-size: 1.15rem; color: var(--green); margin-bottom: 6px; display: block; }
-    .footer-brand p { color: var(--ctp-subtext0); font-size: .875rem; max-width: 280px; }
-    .footer-col h5 { font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ctp-overlay2); margin-bottom: 14px; }
-    .footer-col a { display: block; color: var(--ctp-subtext0); font-size: .875rem; padding: 3px 0; }
+    .footer-brand p { color: var(--subtext); font-size: .875rem; max-width: 280px; }
+    .footer-col h5 { font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 14px; }
+    .footer-col a { display: block; color: var(--subtext); font-size: .875rem; padding: 3px 0; }
     .footer-col a:hover { color: var(--green); }
     .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,.05);
+      border-top: 1px solid var(--border);
       padding-top: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: .825rem;
-      color: var(--ctp-overlay2);
+      color: var(--muted);
       flex-wrap: wrap;
       gap: 12px;
     }
 
+    /* Error state */
+    .config-error {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(255,122,138,.08);
+      border: 1px solid rgba(255,122,138,.2);
+      border-radius: 10px;
+      color: #ff7a8a;
+      font-size: .875rem;
+      text-align: center;
+      display: none;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
-      .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; background: rgba(8,8,10,.98); flex-direction: column; padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,.08); }
+      .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; background: rgba(8,8,10,.98); flex-direction: column; padding: 16px 24px; border-bottom: 1px solid var(--border); }
       .nav-links.open { display: flex; }
       .mobile-toggle { display: block; }
       .hero h1 { font-size: 2.2rem; }
@@ -310,10 +302,9 @@
     <nav class="navbar">
       <div class="container">
         <a href="/" class="nav-brand">
-          <span class="logo-box">B</span>
-          beamed.pro
+          <img src="logo.png" alt="beamed.pro" />
         </a>
-        <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">&#9776;</button>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">Menu</button>
         <ul class="nav-links" id="navLinks">
           <li><a href="/">Home</a></li>
           <li><a href="#product">Buy</a></li>
@@ -329,7 +320,7 @@
         <h1>Premium Minecraft<br><span>Alt Accounts</span></h1>
         <p>Instant automated delivery. 30-day replacement guarantee. Trusted by thousands.</p>
         <div class="btn-group">
-          <a href="#product" class="btn btn-green">Buy Account &mdash; $4.50</a>
+          <a href="#product" class="btn btn-green">Buy Account - $4.50</a>
           <a href="#faq" class="btn btn-outline">FAQ</a>
         </div>
       </div>
@@ -342,26 +333,31 @@
       <div class="stat-item"><div class="num">&lt;2min</div><div class="label">Avg. Delivery</div></div>
     </div>
 
+    <!-- Error message if Supabase not configured -->
+    <div class="container">
+      <div class="config-error" id="configError"></div>
+    </div>
+
     <!-- Product -->
     <section class="section" id="product">
       <div class="container" style="text-align:center;">
         <h2 class="section-title">One Account. Simple Price.</h2>
-        <p class="section-subtitle" style="margin:0 auto 40px;">Premium Minecraft alt account — delivered instantly.</p>
+        <p class="section-subtitle" style="margin:0 auto 40px;">Premium Minecraft alt account - delivered instantly.</p>
 
         <div class="product-card">
           <span class="badge">Minecraft Account</span>
           <h3>Premium Alt Account</h3>
           <p class="desc">Full access. Change credentials on delivery. Hypixel ready.</p>
           <div class="price">$4.50</div>
-          <p class="price-sub">One-time payment &bull; Instant delivery</p>
-          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-green">Buy Account &mdash; $4.50</a>
+          <p class="price-sub">One-time payment / Instant delivery</p>
+          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-green">Buy Account - $4.50</a>
         </div>
 
         <div class="reseller-card">
           <h4>Reseller Access</h4>
           <p>Buy accounts for $3.50 each instead of $4.50. Lifetime access.</p>
           <div class="price">$15.00</div>
-          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-outline">Buy Reseller Access &mdash; $15</a>
+          <a href="https://beamed-pro.mysellauth.com" target="_blank" class="btn btn-outline">Buy Reseller Access - $15</a>
         </div>
       </div>
     </section>
@@ -373,22 +369,18 @@
         <p class="section-subtitle" style="text-align:center;margin:0 auto 48px;">We make buying alts simple and safe.</p>
         <div class="features-grid">
           <div class="feature-card">
-            <span class="icon">&#9889;</span>
             <h4>Instant Delivery</h4>
             <p>Get your account seconds after payment. Fully automated.</p>
           </div>
           <div class="feature-card">
-            <span class="icon">&#128274;</span>
             <h4>Replacement Guarantee</h4>
             <p>30-day replacement if anything goes wrong. No questions asked.</p>
           </div>
           <div class="feature-card">
-            <span class="icon">&#128179;</span>
-            <h4>Crypto & Card</h4>
+            <h4>Crypto and Card</h4>
             <p>Pay with Bitcoin, Ethereum, or USD. Secure checkout.</p>
           </div>
           <div class="feature-card">
-            <span class="icon">&#128172;</span>
             <h4>Discord Support</h4>
             <p>Join 5,000+ members. Support in under 30 minutes.</p>
           </div>
@@ -403,32 +395,28 @@
         <p class="section-subtitle" style="text-align:center;margin:0 auto 48px;">Everything you need to know.</p>
         <div class="faq-list">
           <div class="faq-item">
-            <div class="faq-question">
+            <div class="faq-question" data-target="faq1">
               What is a Minecraft alt account?
-              <span class="arrow">&#9660;</span>
             </div>
-            <div class="faq-answer">A Minecraft alt is an alternate account that lets you play with a different username, bypass server bans, or have multiple profiles. Ours are full-access — you can change the email and password immediately.</div>
+            <div class="faq-answer" id="faq1">A Minecraft alt is an alternate account that lets you play with a different username, bypass server bans, or have multiple profiles. Ours are full-access - you can change the email and password immediately.</div>
           </div>
           <div class="faq-item">
-            <div class="faq-question">
+            <div class="faq-question" data-target="faq2">
               How fast is delivery?
-              <span class="arrow">&#9660;</span>
             </div>
-            <div class="faq-answer">Delivery is instant and automated. You receive your account credentials within seconds of payment confirmation.</div>
+            <div class="faq-answer" id="faq2">Delivery is instant and automated. You receive your account credentials within seconds of payment confirmation.</div>
           </div>
           <div class="faq-item">
-            <div class="faq-question">
+            <div class="faq-question" data-target="faq3">
               What payment methods do you accept?
-              <span class="arrow">&#9660;</span>
             </div>
-            <div class="faq-answer">We accept Bitcoin, Ethereum, and USD via card. All payments are processed securely.</div>
+            <div class="faq-answer" id="faq3">We accept Bitcoin, Ethereum, and USD via card. All payments are processed securely.</div>
           </div>
           <div class="faq-item">
-            <div class="faq-question">
+            <div class="faq-question" data-target="faq4">
               What is reseller access?
-              <span class="arrow">&#9660;</span>
             </div>
-            <div class="faq-answer">Reseller access lets you buy accounts for $3.50 instead of $4.50. It's a one-time $15 fee for lifetime access to the lower price.</div>
+            <div class="faq-answer" id="faq4">Reseller access lets you buy accounts for $3.50 instead of $4.50. It's a one-time $15 fee for lifetime access to the lower price.</div>
           </div>
         </div>
       </div>
@@ -468,37 +456,16 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script>
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-    // Check if user is already signed in
-    supabase.auth.getSession().then(function(result) {
-      if (result.data.session) {
-        document.getElementById('loginBtn').textContent = 'Dashboard'
-        document.getElementById('loginBtn').href = '/dashboard.html'
-      }
-    })
-
-    document.getElementById('mobileToggle').addEventListener('click', function() {
-      document.getElementById('navLinks').classList.toggle('open');
-    });
+    // FAQ accordion
     document.querySelectorAll('.faq-question').forEach(function(el) {
       el.addEventListener('click', function() {
         this.parentElement.classList.toggle('open');
       });
     });
-    document.getElementById('loginBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      var btn = this;
-      if (btn.textContent === 'Dashboard') {
-        window.location.href = '/dashboard.html';
-        return;
-      }
-      supabase.auth.signInWithOAuth({
-        provider: 'discord',
-        options: {
-          redirectTo: window.location.origin + '/dashboard.html'
-        }
-      })
+
+    // Mobile menu toggle
+    document.getElementById('mobileToggle').addEventListener('click', function() {
+      document.getElementById('navLinks').classList.toggle('open');
     });
 
     // Close mobile menu on link click
@@ -507,6 +474,48 @@
         document.getElementById('navLinks').classList.remove('open');
       });
     });
+
+    // Supabase auth
+    var supabase
+
+    try {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'https://your-project-id.supabase.co') {
+        throw new Error('not configured')
+      }
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    } catch (e) {
+      document.getElementById('configError').style.display = 'block'
+      document.getElementById('configError').innerHTML = 'Supabase not configured. Set your keys in <strong>supabase-config.js</strong> to enable Discord login.'
+    }
+
+    // Login button
+    document.getElementById('loginBtn').addEventListener('click', function(e) {
+      e.preventDefault()
+
+      if (this.textContent === 'Dashboard') {
+        window.location.href = '/dashboard.html'
+        return
+      }
+
+      if (!supabase) return
+
+      supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: {
+          redirectTo: window.location.origin + '/dashboard.html'
+        }
+      })
+    })
+
+    // Check if already signed in
+    if (supabase) {
+      supabase.auth.getSession().then(function(result) {
+        if (result.data.session) {
+          var btn = document.getElementById('loginBtn')
+          btn.textContent = 'Dashboard'
+        }
+      })
+    }
   </script>
 </body>
 </html>
