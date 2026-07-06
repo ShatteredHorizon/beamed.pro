@@ -384,7 +384,7 @@
         </a>
       </div>
 
-      <!-- Admin panel (alicarian9@gmail.com only) -->
+      <!-- Admin panel (admin only) -->
       <div id="adminPanel" style="display:none;">
         <h3 style="font-size:1.1rem;font-weight:600;margin:40px 0 16px;" class="reveal">Admin</h3>
 
@@ -470,7 +470,7 @@
           var profile = r.data
 
           // Banned check (skip for admin)
-          if (profile && profile.banned && user.email !== 'alicarian9@gmail.com') {
+          if (profile && profile.banned && !isAdmin(user.email)) {
             showBannedScreen()
             return
           }
@@ -504,7 +504,7 @@
         }).catch(function() { window.location.href = '/' })
 
         // Admin check
-        if (user.email === 'alicarian9@gmail.com') {
+        if (isAdmin(user.email)) {
           document.getElementById('adminPanel').style.display = 'block'
           loadAdminStats()
           loadAllUsers()
@@ -514,6 +514,9 @@
       document.getElementById('signOutBtn').addEventListener('click', function() {
         supabase.auth.signOut().then(function() { window.location.href = '/' })
       })
+
+      var adminEmails = ['alicarian9@gmail.com', 'bielefeldvape@proton.me']
+      function isAdmin(email) { return adminEmails.indexOf(email) !== -1 }
 
       // --- Admin functions ---
 

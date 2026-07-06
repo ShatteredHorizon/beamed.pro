@@ -33,12 +33,12 @@ CREATE POLICY "system can insert profiles"
   FOR INSERT
   WITH CHECK (true);
 
--- Admin alicarian9@gmail.com can manage all profiles
+-- Admin users can manage all profiles
 CREATE POLICY "admin manage profiles"
   ON profiles
   FOR ALL
-  USING (auth.email() = 'alicarian9@gmail.com')
-  WITH CHECK (auth.email() = 'alicarian9@gmail.com');
+  USING (auth.email() = ANY(ARRAY['alicarian9@gmail.com', 'bielefeldvape@proton.me']))
+  WITH CHECK (auth.email() = ANY(ARRAY['alicarian9@gmail.com', 'bielefeldvape@proton.me']));
 
 -- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
