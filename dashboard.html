@@ -350,19 +350,8 @@
       <div id="adminPanel" style="display:none;">
         <h3 style="font-size:1.1rem;font-weight:600;margin:40px 0 16px;" class="reveal">Admin</h3>
 
-        <!-- SelldAuth API setup -->
-        <div class="dash-card glass reveal" style="padding:24px 32px;margin-bottom:16px;">
-          <h4 style="font-weight:600;font-size:.95rem;margin-bottom:4px;">SelldAuth API</h4>
-          <p style="font-size:.85rem;color:var(--subtext);margin-bottom:16px;">Enter your API key and Shop ID to load live stats.</p>
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <input type="password" id="apiKeyInput" placeholder="API Key" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:.875rem;outline:none;box-shadow:var(--inset);" />
-            <input type="text" id="shopIdInput" placeholder="Shop ID" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:.875rem;outline:none;box-shadow:var(--inset);" />
-            <button id="fetchStatsBtn" class="btn btn-white" style="width:auto;padding:10px 24px;font-size:.85rem;">Load Stats</button>
-          </div>
-        </div>
-
-        <!-- Stats display -->
-        <div class="mini-stats reveal" id="statsDisplay" style="display:none;">
+        <!-- Live stats from SelldAuth -->
+        <div class="mini-stats reveal" id="statsDisplay">
           <div class="mini-stat glass">
             <div class="num" id="statProductsSold">-</div>
             <div class="label">Products Sold</div>
@@ -373,20 +362,29 @@
           </div>
           <div class="mini-stat glass">
             <div class="num" id="statRevenue">-</div>
-            <div class="label">Revenue</div>
+            <div class="label">Revenue (30d)</div>
           </div>
         </div>
-
         <div id="statsError" style="display:none;padding:12px 16px;background:rgba(255,122,138,.08);border:1px solid rgba(255,122,138,.2);border-radius:10px;color:#ff7a8a;font-size:.85rem;text-align:center;margin-bottom:16px;"></div>
 
-        <div class="dash-card glass reveal" style="padding:24px 32px;margin-bottom:0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-            <div>
-              <h4 style="font-weight:600;font-size:.95rem;">Manage Users</h4>
-              <p style="font-size:.85rem;color:var(--subtext);margin-top:2px;margin-bottom:0;">Grant or remove reseller access</p>
-            </div>
-            <a href="https://supabase.com/dashboard/project/tpnoaqbwhjgdkurbcccu/editor" target="_blank" class="btn btn-glass" style="width:auto;padding:10px 20px;font-size:.85rem;">Open Supabase</a>
+        <!-- Manage Users -->
+        <div class="dash-card glass reveal" style="padding:24px 32px;">
+          <h4 style="font-weight:600;font-size:.95rem;margin-bottom:4px;">Manage Users</h4>
+          <p style="font-size:.85rem;color:var(--subtext);margin-bottom:16px;">Look up a user by email to grant or remove reseller access.</p>
+          <div style="display:flex;gap:10px;">
+            <input type="email" id="lookupEmail" placeholder="user@example.com" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:inherit;font-size:.875rem;outline:none;box-shadow:var(--inset);" />
+            <button id="lookupBtn" class="btn btn-glass" style="width:auto;padding:10px 24px;font-size:.85rem;">Look Up</button>
           </div>
+          <div id="lookupResult" style="display:none;margin-top:16px;padding:16px;background:var(--surface);border-radius:12px;border:1px solid var(--border);">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+              <div>
+                <div id="lookupName" style="font-weight:600;font-size:.9rem;"></div>
+                <div id="lookupEmailDisplay" style="font-size:.8rem;color:var(--subtext);margin-top:2px;"></div>
+              </div>
+              <button id="toggleResellerBtn" class="btn btn-sm btn-glass" style="width:auto;padding:8px 20px;font-size:.8rem;"></button>
+            </div>
+          </div>
+          <div id="lookupError" style="display:none;margin-top:12px;font-size:.85rem;color:#ff7a8a;text-align:center;"></div>
         </div>
       </div>
 
@@ -443,9 +441,8 @@
         // Admin check
         if (user.email === 'alicarian9@gmail.com') {
           document.getElementById('adminPanel').style.display = 'block'
-          // Restore saved API credentials
-          if (localStorage.getItem('sa_api_key')) document.getElementById('apiKeyInput').value = localStorage.getItem('sa_api_key')
-          if (localStorage.getItem('sa_shop_id')) document.getElementById('shopIdInput').value = localStorage.getItem('sa_shop_id')
+          loadAdminStats()
+          setupUserLookup()
         }
 
         // Check reseller status
@@ -482,56 +479,95 @@
         supabase.auth.signOut().then(function() { window.location.href = '/' })
       })
 
-      // SelldAuth API fetch
-      var fetchBtn = document.getElementById('fetchStatsBtn')
-      if (fetchBtn) {
-        fetchBtn.addEventListener('click', function() {
-          var key = document.getElementById('apiKeyInput').value.trim()
-          var shopId = document.getElementById('shopIdInput').value.trim()
-          if (!key || !shopId) { showStatsError('Enter both API Key and Shop ID.'); return }
+      // --- Admin functions (alicarian9@gmail.com only) ---
 
-          localStorage.setItem('sa_api_key', key)
-          localStorage.setItem('sa_shop_id', shopId)
+      function loadAdminStats() {
+        var key = '5916197|k5ytb24rj3Xm2CxX8Z2f96dbpYtu5kS3CMO9ZBgh923e00b6'
+        var shopId = '229473'
+        var headers = { 'Authorization': 'Bearer ' + key, 'Accept': 'application/json' }
 
-          fetchBtn.disabled = true
-          fetchBtn.textContent = 'Loading...'
-          hideStatsError()
-
-          var headers = { 'Authorization': 'Bearer ' + key, 'Accept': 'application/json' }
-
-          // Fetch stats
-          Promise.all([
-            fetch('https://api.sellauth.com/v1/shops/' + shopId + '/stats', { headers: headers }).then(function(r) { if (!r.ok) throw new Error('Stats: ' + r.status); return r.json() }),
-            fetch('https://api.sellauth.com/v1/shops/' + shopId + '/analytics', { headers: headers }).then(function(r) { if (!r.ok) throw new Error('Analytics: ' + r.status); return r.json() })
-          ]).then(function(results) {
-            var stats = results[0]
-            var analytics = results[1]
-
-            document.getElementById('statProductsSold').textContent = (stats.products_sold || 0).toLocaleString()
-            document.getElementById('statCustomers').textContent = (stats.total_customers || 0).toLocaleString()
-
-            var revenue = analytics.revenue || analytics.total_revenue || 0
-            document.getElementById('statRevenue').textContent = '$' + Number(revenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
-            document.getElementById('statsDisplay').style.display = 'grid'
-            fetchBtn.disabled = false
-            fetchBtn.textContent = 'Load Stats'
-            document.getElementById('statsDisplay').querySelectorAll('.reveal').forEach(function(el) { el.classList.add('show') })
-          }).catch(function(err) {
-            showStatsError('Failed to fetch: ' + err.message)
-            fetchBtn.disabled = false
-            fetchBtn.textContent = 'Load Stats'
-          })
+        Promise.all([
+          fetch('https://api.sellauth.com/v1/shops/' + shopId + '/stats', { headers: headers }),
+          fetch('https://api.sellauth.com/v1/shops/' + shopId + '/analytics', { headers: headers })
+        ]).then(function(responses) {
+          return Promise.all(responses.map(function(r) {
+            if (!r.ok) throw new Error(r.statusText)
+            return r.json()
+          }))
+        }).then(function(results) {
+          var stats = results[0]
+          var analytics = results[1]
+          document.getElementById('statProductsSold').textContent = (stats.products_sold || 0).toLocaleString()
+          document.getElementById('statCustomers').textContent = (stats.total_customers || 0).toLocaleString()
+          var revenue = analytics.revenue || analytics.total_revenue || 0
+          document.getElementById('statRevenue').textContent = '$' + Number(revenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        }).catch(function(err) {
+          var el = document.getElementById('statsError')
+          el.textContent = 'Could not load SelldAuth stats: ' + err.message
+          el.style.display = 'block'
         })
       }
 
-      function showStatsError(msg) {
-        var el = document.getElementById('statsError')
-        el.textContent = msg
-        el.style.display = 'block'
+      function setupUserLookup() {
+        document.getElementById('lookupBtn').addEventListener('click', lookupUser)
+        document.getElementById('lookupEmail').addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') lookupUser()
+        })
       }
-      function hideStatsError() {
-        document.getElementById('statsError').style.display = 'none'
+
+      var currentLookupId = null
+
+      function lookupUser() {
+        var email = document.getElementById('lookupEmail').value.trim()
+        if (!email) return
+        document.getElementById('lookupError').style.display = 'none'
+        document.getElementById('lookupResult').style.display = 'none'
+        document.getElementById('lookupBtn').textContent = 'Searching...'
+        document.getElementById('lookupBtn').disabled = true
+
+        supabase.from('profiles').select('id,display_name,email,is_reseller').eq('email', email).maybeSingle().then(function(r) {
+          document.getElementById('lookupBtn').textContent = 'Look Up'
+          document.getElementById('lookupBtn').disabled = false
+          if (r.error || !r.data) {
+            document.getElementById('lookupError').textContent = r.error ? r.error.message : 'No user found with that email.'
+            document.getElementById('lookupError').style.display = 'block'
+            return
+          }
+          var profile = r.data
+          currentLookupId = profile.id
+          document.getElementById('lookupName').textContent = profile.display_name || 'Unknown'
+          document.getElementById('lookupEmailDisplay').textContent = profile.email || email
+          var btn = document.getElementById('toggleResellerBtn')
+          if (profile.is_reseller) {
+            btn.textContent = 'Remove Reseller'
+            btn.style.background = 'rgba(255,122,138,.1)'
+            btn.style.color = '#ff7a8a'
+            btn.style.border = '1px solid rgba(255,122,138,.2)'
+          } else {
+            btn.textContent = 'Grant Reseller'
+            btn.style.background = 'rgba(34,197,94,.1)'
+            btn.style.color = '#4ade80'
+            btn.style.border = '1px solid rgba(34,197,94,.2)'
+          }
+          btn.onclick = function() { toggleReseller(profile.id, !profile.is_reseller) }
+          document.getElementById('lookupResult').style.display = 'block'
+        })
+      }
+
+      function toggleReseller(userId, newValue) {
+        var btn = document.getElementById('toggleResellerBtn')
+        btn.disabled = true
+        btn.textContent = 'Saving...'
+        supabase.from('profiles').update({ is_reseller: newValue }).eq('id', userId).then(function(r) {
+          btn.disabled = false
+          if (r.error) {
+            document.getElementById('lookupError').textContent = 'Error: ' + r.error.message
+            document.getElementById('lookupError').style.display = 'block'
+            btn.textContent = 'Error'
+            return
+          }
+          lookupUser()
+        })
       }
     }
   </script>
