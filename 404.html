@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Beamed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <header class="header scrolled" id="header">
+        <nav class="header__nav container">
+            <a href="/" class="header__logo">
+                <img src="/logo.png" alt="Beamed" width="28" height="28" style="border-radius:6px;">
+                Beamed
+            </a>
+            <div class="header__links">
+                <a href="modules/index.html" class="header__link">Modules</a>
+                <a href="faq/index.html" class="header__link">FAQ</a>
+            </div>
+            <a href="modules/index.html" class="btn btn--primary header__cta">Get Started</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-hero">
+            <div class="container" style="text-align:center;">
+                <h1 class="page-hero__title split-parent">
+                    <span class="split-child"><span class="text-brand">404</span></span>
+                </h1>
+                <p class="page-hero__subtitle">This page doesn't exist. Maybe it was moved, or maybe you typed the URL wrong.</p>
+                <a href="/" class="btn btn--primary btn--lg" style="margin-top:32px;">
+                    Go home
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script src="bg-animation.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
