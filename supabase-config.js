@@ -1,2 +1,0 @@
-const SUPABASE_URL = 'https://tpnoaqbwhjgdkurbcccu.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwbm9hcWJ3aGpnZGt1cmJjY2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMzY0MzQsImV4cCI6MjA5ODkxMjQzNH0.pCkuQdQ3-j9SiBqtSv_Wdvdvb6w4ZxShJvOreZduVe8'
