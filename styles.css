@@ -137,6 +137,13 @@ img { max-width: 100%; height: auto; display: block; }
     letter-spacing: -0.02em;
 }
 
+.header__logo img {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
 .header__links {
     display: flex;
     align-items: center;
