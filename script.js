@@ -51,6 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
         blurElements.forEach(el => blurObserver.observe(el));
     }
 
+    // ===== FADE UP ON SCROLL =====
+    document.querySelectorAll('.fade-up').forEach(el => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        observer.observe(el);
+    });
+
     // ===== FAQ ACCORDION =====
     document.querySelectorAll('.faq__question').forEach(btn => {
         btn.addEventListener('click', () => {
