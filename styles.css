@@ -269,7 +269,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .logo-sway {
-    animation: sway 4s ease-in-out infinite, glow-pulse 3s ease-in-out infinite;
+    animation: sway 4s ease-in-out infinite;
     transform-origin: center center;
 }
 
@@ -277,11 +277,6 @@ img { max-width: 100%; height: auto; display: block; }
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(-1.5deg); }
     75% { transform: rotate(1.5deg); }
-}
-
-@keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(123, 82, 201, 0.2); }
-    50% { box-shadow: 0 0 40px rgba(123, 82, 201, 0.4); }
 }
 
 .fade-up {
