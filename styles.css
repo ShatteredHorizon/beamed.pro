@@ -274,9 +274,23 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 @keyframes sway {
-    0%, 100% { transform: rotate(0deg); }
+    0% { transform: rotate(0deg); }
+    6.25% { transform: rotate(-0.58deg); }
+    12.5% { transform: rotate(-1.06deg); }
+    18.75% { transform: rotate(-1.38deg); }
     25% { transform: rotate(-1.5deg); }
+    31.25% { transform: rotate(-1.38deg); }
+    37.5% { transform: rotate(-1.06deg); }
+    43.75% { transform: rotate(-0.58deg); }
+    50% { transform: rotate(0deg); }
+    56.25% { transform: rotate(0.58deg); }
+    62.5% { transform: rotate(1.06deg); }
+    68.75% { transform: rotate(1.38deg); }
     75% { transform: rotate(1.5deg); }
+    81.25% { transform: rotate(1.38deg); }
+    87.5% { transform: rotate(1.06deg); }
+    93.75% { transform: rotate(0.58deg); }
+    100% { transform: rotate(0deg); }
 }
 
 .fade-up {
