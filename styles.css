@@ -269,7 +269,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .logo-sway {
-    animation: sway 7s ease-in-out infinite;
+    animation: sway 4s ease-in-out infinite;
     transform-origin: center center;
 }
 
