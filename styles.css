@@ -269,13 +269,14 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .logo-sway {
-    animation: sway 4s ease-in-out infinite;
+    animation: sway 7s ease-in-out infinite;
+    transform-origin: center center;
 }
 
 @keyframes sway {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-12px); }
-    75% { transform: translateX(12px); }
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-4deg); }
+    75% { transform: rotate(4deg); }
 }
 
 @keyframes pulse-dot {
