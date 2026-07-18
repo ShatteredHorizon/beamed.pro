@@ -34,7 +34,7 @@
 
         // Gradient mesh background
         const g1 = ctx.createRadialGradient(width * 0.2, height * 0.3, 0, width * 0.2, height * 0.3, width * 0.5);
-        g1.addColorStop(0, 'rgba(122, 91, 181, 0.04)');
+        g1.addColorStop(0, 'rgba(176, 124, 216, 0.04)');
         g1.addColorStop(1, 'transparent');
         ctx.fillStyle = g1;
         ctx.fillRect(0, 0, width, height);
@@ -57,7 +57,7 @@
 
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(122, 91, 181, ${p.opacity})`;
+            ctx.fillStyle = `rgba(176, 124, 216, ${p.opacity})`;
             ctx.fill();
         });
 
@@ -72,7 +72,7 @@
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(122, 91, 181, ${0.06 * (1 - dist / 120)})`;
+                    ctx.strokeStyle = `rgba(176, 124, 216, ${0.06 * (1 - dist / 120)})`;
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
