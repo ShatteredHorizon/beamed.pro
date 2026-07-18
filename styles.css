@@ -275,8 +275,8 @@ img { max-width: 100%; height: auto; display: block; }
 
 @keyframes sway {
     0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-4deg); }
-    75% { transform: rotate(4deg); }
+    25% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
 }
 
 @keyframes pulse-dot {
